@@ -178,7 +178,7 @@ export default function OrdersPage() {
 
   const filteredOrders = orders.filter(order => {
     // فلترة حسب الدور - العمال يرون طلباتهم فقط
-    const matchesRole = user.role === 'admin' || order.assignedWorker === user.id
+    const matchesRole = user?.role === 'admin' || order.assignedWorker === user?.id
 
     const matchesSearch = searchType === 'orderNumber'
       ? order.id.toLowerCase().includes(searchTerm.toLowerCase())

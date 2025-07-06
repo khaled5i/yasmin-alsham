@@ -49,9 +49,9 @@ function DashboardContent() {
 
   // الإحصائيات حسب الدور
   const getStatsForRole = () => {
-    if (user.role === 'worker') {
+    if (user?.role === 'worker') {
       // إحصائيات العامل - طلباته فقط
-      const workerOrders = orders.filter(order => order.assignedWorker === user.id)
+      const workerOrders = orders.filter(order => order.assignedWorker === user?.id)
       const workerCompletedOrders = workerOrders.filter(order => order.status === 'completed')
       const workerActiveOrders = workerOrders.filter(order => ['pending', 'in_progress'].includes(order.status))
 
@@ -119,8 +119,8 @@ function DashboardContent() {
   const recentOrders = orders
     .filter(order => {
       // إذا كان المستخدم عامل، اعرض طلباته فقط
-      if (user.role === 'worker') {
-        return order.assignedWorker === user.id
+      if (user?.role === 'worker') {
+        return order.assignedWorker === user?.id
       }
       // إذا كان مدير، اعرض جميع الطلبات
       return true
@@ -243,22 +243,22 @@ function DashboardContent() {
               <div className="w-px h-6 bg-gray-300"></div>
               <div className="max-w-md">
                 <h1 className="text-xl xl:text-2xl font-bold text-gray-800 truncate">
-                  {t('welcome_back')}، {user.full_name || user.email}
+                  {t('welcome_back')}، {user?.full_name || user?.email}
                 </h1>
                 <p className="text-gray-600 text-sm">
-                  {user.role === 'admin' ? t('admin_dashboard') : t('worker_dashboard')}
+                  {user?.role === 'admin' ? t('admin_dashboard') : t('worker_dashboard')}
                 </p>
               </div>
               <span className="px-3 py-1 bg-gradient-to-r from-pink-100 to-rose-100 text-pink-700 rounded-full text-sm font-medium whitespace-nowrap">
-                {user.role === 'admin' ? t('admin') : t('worker')}
+                {user?.role === 'admin' ? t('admin') : t('worker')}
               </span>
             </div>
 
             <div className="flex items-center space-x-4 space-x-reverse language-btn-container">
               <div className="flex items-center space-x-3 space-x-reverse language-btn-container">
                 <div className="text-right max-w-xs">
-                  <p className="font-medium text-gray-800 truncate">{user.full_name}</p>
-                  <p className="text-sm text-gray-600 truncate">{user.email}</p>
+                  <p className="font-medium text-gray-800 truncate">{user?.full_name}</p>
+                  <p className="text-sm text-gray-600 truncate">{user?.email}</p>
                 </div>
 
                 {/* زر تغيير اللغة للشاشات الكبيرة */}
@@ -267,8 +267,8 @@ function DashboardContent() {
                   className="px-3 py-1.5 text-sm text-gray-600 hover:text-pink-600 bg-gray-100 hover:bg-pink-50 rounded-full transition-all duration-300 font-medium min-w-[70px] text-center"
                   title={t('change_language')}
                   style={{
-                    display: 'block !important',
-                    visibility: 'visible !important',
+                    display: 'block',
+                    visibility: 'visible',
                     position: 'relative',
                     zIndex: 99999,
                     minWidth: '70px',
@@ -306,22 +306,22 @@ function DashboardContent() {
                 <div className="w-px h-4 sm:h-6 bg-gray-300 flex-shrink-0"></div>
                 <div className="min-w-0 flex-1 overflow-hidden">
                   <h1 className="text-sm sm:text-lg md:text-xl font-bold text-gray-800 truncate">
-                    {t('welcome_back')}، {user.full_name || user.email}
+                    {t('welcome_back')}، {user?.full_name || user?.email}
                   </h1>
                 </div>
               </div>
 
               <div className="flex items-center space-x-1 sm:space-x-2 space-x-reverse flex-shrink-0 min-w-0 language-btn-container">
                 <span className="px-2 sm:px-3 py-1 bg-gradient-to-r from-pink-100 to-rose-100 text-pink-700 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
-                  {t(user.role === 'admin' ? 'admin' : 'worker')}
+                  {t(user?.role === 'admin' ? 'admin' : 'worker')}
                 </span>
                 <button
                   onClick={() => changeLanguage(language === 'ar' ? 'en' : 'ar')}
                   className="px-2 sm:px-3 py-1 text-xs sm:text-sm text-gray-600 hover:text-pink-600 bg-gray-100 hover:bg-pink-50 rounded-full transition-all duration-300 flex-shrink-0 font-medium min-w-[60px] sm:min-w-[70px] text-center"
                   title={t('change_language')}
                   style={{
-                    display: 'block !important',
-                    visibility: 'visible !important',
+                    display: 'block',
+                    visibility: 'visible',
                     position: 'relative',
                     zIndex: 99999,
                     minWidth: '60px',
@@ -346,12 +346,12 @@ function DashboardContent() {
             <div className="pb-3 sm:pb-4 border-t border-gray-100">
               <div className="pt-2 sm:pt-3">
                 <p className="text-xs sm:text-sm text-gray-600 mb-1">
-                  {t('dashboard')} - {t(user.role === 'admin' ? 'admin' : 'worker')}
+                  {t('dashboard')} - {t(user?.role === 'admin' ? 'admin' : 'worker')}
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-gray-800 text-sm sm:text-base truncate">{user.full_name}</p>
-                    <p className="text-xs sm:text-sm text-gray-600 truncate">{user.email}</p>
+                    <p className="font-medium text-gray-800 text-sm sm:text-base truncate">{user?.full_name}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 truncate">{user?.email}</p>
                   </div>
                 </div>
               </div>
@@ -374,7 +374,7 @@ function DashboardContent() {
               <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2 sm:mb-3 break-words">
                 <span className="block sm:hidden">{t('welcome_back')}</span>
                 <span className="hidden sm:inline">{t('welcome_back')}، </span>
-                <span className="text-pink-600 break-words">{user.full_name}</span>
+                <span className="text-pink-600 break-words">{user?.full_name}</span>
               </h2>
               <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto sm:mx-0 break-words">
                 {t('overview_today')}
@@ -382,7 +382,7 @@ function DashboardContent() {
             </div>
 
             {/* أزرار العمل للمدير */}
-            {user.role === 'admin' && (
+            {user?.role === 'admin' && (
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center sm:justify-start w-full">
                 <Link
                   href="/dashboard/add-order"
@@ -403,7 +403,7 @@ function DashboardContent() {
             )}
 
             {/* رسالة ترحيب للعامل */}
-            {user.role === 'worker' && (
+            {user?.role === 'worker' && (
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg sm:rounded-xl p-4 sm:p-6 text-center sm:text-right overflow-hidden">
                 <h3 className="text-lg sm:text-xl font-semibold text-blue-800 mb-2 break-words">
                   {t('welcome_worker')}
@@ -544,7 +544,7 @@ function DashboardContent() {
 
 
           {/* الإجراءات السريعة - للمدير فقط في الشاشات الصغيرة */}
-          {user.role === 'admin' && (
+          {user?.role === 'admin' && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -594,7 +594,7 @@ function DashboardContent() {
 
 
           {/* التقارير - للشاشات الصغيرة في الأسفل */}
-          {user.role === 'admin' && (
+          {user?.role === 'admin' && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -672,7 +672,7 @@ function DashboardContent() {
           </motion.div>
 
           {/* الإجراءات السريعة - للمدير فقط */}
-          {user.role === 'admin' && (
+          {user?.role === 'admin' && (
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}

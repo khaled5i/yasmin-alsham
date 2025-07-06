@@ -69,7 +69,7 @@ export const getValidationErrorMessage = (fieldType: string, language: 'ar' | 'e
     }
   }
   
-  return messages[language][fieldType] || messages[language].numeric
+  return (messages[language] as any)[fieldType] || messages[language].numeric
 }
 
 // دالة للتعامل مع تغيير الإدخال في الحقول الرقمية

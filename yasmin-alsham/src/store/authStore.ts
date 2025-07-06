@@ -71,7 +71,7 @@ export const useAuthStore = create<AuthState>()(
           // البحث عن المستخدم في البيانات المحفوظة
           const users = getStoredUsers()
           const foundUser = users.find(
-            user => user.email.toLowerCase() === email.toLowerCase() && user.password === password
+            (user: any) => user.email.toLowerCase() === email.toLowerCase() && user.password === password
           )
 
           if (foundUser) {

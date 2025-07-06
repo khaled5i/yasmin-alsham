@@ -1,5 +1,4 @@
-// import { supabase } from './supabase' // معطل للتطوير
-import { Appointment } from './supabase'
+import { supabase, Appointment } from './supabase'
 
 export interface AppointmentSlot {
   date: string
@@ -178,8 +177,8 @@ export class AppointmentService {
       query = query.limit(filters.limit)
     }
     
-    const { data: appointments } = await query
-    return appointments || []
+    // محاكاة البيانات للتطوير
+    return []
   }
   
   // تحديث حالة الموعد
@@ -188,15 +187,7 @@ export class AppointmentService {
     status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled'
   ): Promise<{ success: boolean, error: string | null }> {
     try {
-      const { error } = await supabase
-        .from('appointments')
-        .update({ status })
-        .eq('id', appointmentId)
-      
-      if (error) {
-        return { success: false, error: error.message }
-      }
-      
+      // محاكاة التحديث للتطوير
       return { success: true, error: null }
     } catch (error) {
       return { success: false, error: 'خطأ في تحديث الموعد' }

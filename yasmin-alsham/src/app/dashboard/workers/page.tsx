@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuthStore } from '@/store/authStore'
-import { useDataStore } from '@/store/dataStore'
+import { useDataStore, Worker } from '@/store/dataStore'
 import { useTranslation } from '@/hooks/useTranslation'
 import { 
   ArrowRight, 
@@ -70,7 +70,8 @@ export default function WorkersPage() {
         password: newWorker.password,
         full_name: newWorker.full_name,
         phone: newWorker.phone,
-        specialty: newWorker.specialty
+        specialty: newWorker.specialty,
+        is_active: true
       })
 
       setMessage({ type: 'success', text: t('worker_added_success') })
@@ -103,7 +104,7 @@ export default function WorkersPage() {
   const handleSaveWorker = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!editingWorker.email || !editingWorker.full_name || !editingWorker.phone || !editingWorker.specialty) {
+    if (!editingWorker || !editingWorker.email || !editingWorker.full_name || !editingWorker.phone || !editingWorker.specialty) {
       setMessage({ type: 'error', text: t('fill_required_fields') })
       return
     }
@@ -418,7 +419,7 @@ export default function WorkersPage() {
                     <input
                       type="text"
                       value={editingWorker.full_name}
-                      onChange={(e) => setEditingWorker(prev => ({ ...prev, full_name: e.target.value }))}
+                      onChange={(e) => setEditingWorker((prev: any) => ({ ...prev, full_name: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                       required
                     />
@@ -431,7 +432,7 @@ export default function WorkersPage() {
                     <input
                       type="email"
                       value={editingWorker.email}
-                      onChange={(e) => setEditingWorker(prev => ({ ...prev, email: e.target.value }))}
+                      onChange={(e) => setEditingWorker((prev: any) => ({ ...prev, email: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                       required
                     />
@@ -444,7 +445,7 @@ export default function WorkersPage() {
                     <input
                       type="password"
                       value={editingWorker.password}
-                      onChange={(e) => setEditingWorker(prev => ({ ...prev, password: e.target.value }))}
+                      onChange={(e) => setEditingWorker((prev: any) => ({ ...prev, password: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                       placeholder={t('leave_empty_no_change')}
                     />
@@ -457,7 +458,7 @@ export default function WorkersPage() {
                     <input
                       type="tel"
                       value={editingWorker.phone}
-                      onChange={(e) => setEditingWorker(prev => ({ ...prev, phone: e.target.value }))}
+                      onChange={(e) => setEditingWorker((prev: any) => ({ ...prev, phone: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                       required
                     />
@@ -470,7 +471,7 @@ export default function WorkersPage() {
                     <input
                       type="text"
                       value={editingWorker.specialty}
-                      onChange={(e) => setEditingWorker(prev => ({ ...prev, specialty: e.target.value }))}
+                      onChange={(e) => setEditingWorker((prev: any) => ({ ...prev, specialty: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                       required
                     />
@@ -482,7 +483,7 @@ export default function WorkersPage() {
                     </label>
                     <select
                       value={editingWorker.is_active ? 'active' : 'inactive'}
-                      onChange={(e) => setEditingWorker(prev => ({ ...prev, is_active: e.target.value === 'active' }))}
+                      onChange={(e) => setEditingWorker((prev: any) => ({ ...prev, is_active: e.target.value === 'active' }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     >
                       <option value="active">{t('active')}</option>

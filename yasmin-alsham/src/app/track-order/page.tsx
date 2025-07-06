@@ -407,7 +407,7 @@ export default function TrackOrderPage() {
                     {Object.entries(orderData.measurements).map(([key, value]) => (
                       <div key={key} className="p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-100">
                         <span className="text-sm text-gray-500 block mb-1">{getMeasurementNameInArabic(key)}</span>
-                        <span className="text-lg font-medium text-gray-800">{value} سم</span>
+                        <span className="text-lg font-medium text-gray-800">{String(value)} سم</span>
                       </div>
                     ))}
                   </div>

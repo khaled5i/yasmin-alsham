@@ -64,7 +64,12 @@ function AddOrderContent() {
     assignedWorker: '',
     dueDate: '',
     notes: '',
-    voiceNote: null as string | null,
+    voiceNotes: [] as Array<{
+      id: string
+      data: string
+      timestamp: number
+      duration?: number
+    }>,
     images: [] as string[]
   })
 
@@ -76,6 +81,19 @@ function AddOrderContent() {
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }))
+  }
+
+  // معالجة تغيير الملاحظات الصوتية
+  const handleVoiceNotesChange = (voiceNotes: Array<{
+    id: string
+    data: string
+    timestamp: number
+    duration?: number
+  }>) => {
+    setFormData(prev => ({
+      ...prev,
+      voiceNotes
     }))
   }
 
@@ -142,7 +160,7 @@ function AddOrderContent() {
         assignedWorker: formData.assignedWorker || undefined,
         dueDate: formData.dueDate,
         notes: formData.notes || undefined,
-        voiceNote: formData.voiceNote || undefined,
+        voiceNotes: formData.voiceNotes.length > 0 ? formData.voiceNotes : undefined,
         images: formData.images.length > 0 ? formData.images : undefined,
         status: 'pending'
       })
@@ -577,7 +595,7 @@ function AddOrderContent() {
                 </label>
                 <VoiceNotes
                   voiceNotes={formData.voiceNotes || []}
-                  onVoiceNotesChange={(voiceNotes) => handleInputChange('voiceNotes', voiceNotes)}
+                  onVoiceNotesChange={handleVoiceNotesChange}
                   disabled={isSubmitting}
                 />
               </div>

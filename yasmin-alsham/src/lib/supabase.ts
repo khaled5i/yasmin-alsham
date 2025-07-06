@@ -8,11 +8,45 @@ export const supabase = {
     signOut: async () => ({ error: null }),
     getUser: async () => ({ data: { user: null }, error: null })
   },
-  from: () => ({
-    select: () => ({ data: [], error: null }),
-    insert: () => ({ data: null, error: null }),
-    update: () => ({ data: null, error: null }),
-    delete: () => ({ data: null, error: null })
+  from: (table: string) => ({
+    select: (columns: string = '*') => {
+      const queryBuilder = {
+        data: [],
+        error: null,
+        order: (column: string, options?: any) => queryBuilder,
+        eq: (column: string, value: any) => queryBuilder,
+        limit: (count: number) => queryBuilder,
+        then: (callback: any) => callback({ data: [], error: null })
+      }
+      return queryBuilder
+    },
+    insert: (values: any) => {
+      const queryBuilder = {
+        data: null,
+        error: null,
+        eq: (column: string, value: any) => queryBuilder,
+        then: (callback: any) => callback({ data: null, error: null })
+      }
+      return queryBuilder
+    },
+    update: (values: any) => {
+      const queryBuilder = {
+        data: null,
+        error: null,
+        eq: (column: string, value: any) => queryBuilder,
+        then: (callback: any) => callback({ data: null, error: null })
+      }
+      return queryBuilder
+    },
+    delete: () => {
+      const queryBuilder = {
+        data: null,
+        error: null,
+        eq: (column: string, value: any) => queryBuilder,
+        then: (callback: any) => callback({ data: null, error: null })
+      }
+      return queryBuilder
+    }
   })
 }
 
