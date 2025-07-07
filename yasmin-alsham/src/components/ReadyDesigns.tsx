@@ -166,7 +166,7 @@ export default function ReadyDesigns() {
         </motion.div>
 
         {/* شبكة التصاميم */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-12">
           {readyDesigns.map((design, index) => (
             <motion.div
               key={design.id}

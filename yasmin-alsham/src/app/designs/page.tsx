@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRight, Eye, Heart, X, ChevronLeft, ChevronRight, Grid3X3, Grid2X2 } from 'lucide-react'
+import { ArrowRight, Eye, Heart, X, ChevronLeft, ChevronRight, Grid3X3, Grid2X2, ShoppingBag } from 'lucide-react'
 import { allDesigns } from '@/data/designs'
+import { useShopStore, formatPrice } from '@/store/shopStore'
 
 export default function DesignsPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
@@ -15,6 +16,10 @@ export default function DesignsPage() {
 
   // حالة عرض البطاقات للهواتف المحمولة
   const [isSingleColumn, setIsSingleColumn] = useState(false)
+
+  // متجر التسوق
+  const { addToFavorites, removeFromFavorites, isFavorite, addToCart } = useShopStore()
+  const [addedToCart, setAddedToCart] = useState<number[]>([])
 
   // تحميل حالة العرض من localStorage
   useEffect(() => {
@@ -29,6 +34,43 @@ export default function DesignsPage() {
     const newMode = !isSingleColumn
     setIsSingleColumn(newMode)
     localStorage.setItem('yasmin-designs-view-mode', newMode ? 'single' : 'double')
+  }
+
+  // دوال التعامل مع المفضلة والسلة
+  const handleToggleFavorite = (design: any, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const product = {
+      id: design.id.toString(),
+      name: design.title,
+      price: design.price || 299, // سعر افتراضي
+      image: design.images[0],
+      description: design.description,
+      category: design.category
+    }
+
+    if (isFavorite(product.id)) {
+      removeFromFavorites(product.id)
+    } else {
+      addToFavorites(product)
+    }
+  }
+
+  const handleAddToCart = (design: any, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const product = {
+      id: design.id.toString(),
+      name: design.title,
+      price: design.price || 299, // سعر افتراضي
+      image: design.images[0],
+      description: design.description,
+      category: design.category
+    }
+
+    addToCart(product)
+    setAddedToCart(prev => [...prev, design.id])
+    setTimeout(() => {
+      setAddedToCart(prev => prev.filter(id => id !== design.id))
+    }, 2000)
   }
 
 
@@ -115,21 +157,21 @@ export default function DesignsPage() {
   }, [isGalleryOpen, selectedImageIndex])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-16 lg:pt-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-12">
         {/* التنقل */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-8"
+          className="mb-4 lg:mb-8"
         >
           <Link
             href="/"
             className="inline-flex items-center space-x-2 space-x-reverse text-pink-600 hover:text-pink-700 transition-colors duration-300"
           >
-            <ArrowRight className="w-4 h-4" />
-            <span>العودة إلى الرئيسية</span>
+            <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5" />
+            <span className="text-sm lg:text-base">العودة إلى الرئيسية</span>
           </Link>
         </motion.div>
 
@@ -255,9 +297,16 @@ export default function DesignsPage() {
                     </div>
                   </div>
                   
-                  {/* زر الإعجاب */}
-                  <button className="absolute top-3 left-3 bg-white/80 hover:bg-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
-                    <Heart className="w-4 h-4 text-pink-500" />
+                  {/* زر المفضلة */}
+                  <button
+                    onClick={(e) => handleToggleFavorite(design, e)}
+                    className={`absolute top-3 left-3 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 ${
+                      isFavorite(design.id.toString())
+                        ? 'bg-red-500 text-white'
+                        : 'bg-white/80 hover:bg-white text-pink-500'
+                    }`}
+                  >
+                    <Heart className={`w-4 h-4 ${isFavorite(design.id.toString()) ? 'fill-current' : ''}`} />
                   </button>
                 </div>
                 
@@ -275,21 +324,39 @@ export default function DesignsPage() {
                         {design.title}
                       </h3>
 
-                      <p className="text-sm text-gray-600 leading-relaxed">
+                      <p className="text-sm text-gray-600 leading-relaxed mb-3">
                         {design.description}
                       </p>
+
+                      {/* السعر */}
+                      <div className="text-lg font-bold text-pink-600 mb-3">
+                        {formatPrice(design.price)}
+                      </div>
                     </div>
                   </Link>
-                  
-                  {/* زر الاستفسار */}
-                  <div className="flex">
+
+                  {/* أزرار الإجراءات */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => handleAddToCart(design, e)}
+                      disabled={addedToCart.includes(design.id)}
+                      className={`flex-1 flex items-center justify-center space-x-1 space-x-reverse py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 ${
+                        addedToCart.includes(design.id)
+                          ? 'bg-green-500 text-white'
+                          : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:shadow-lg'
+                      }`}
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>{addedToCart.includes(design.id) ? 'تم الإضافة' : 'أضف للسلة'}</span>
+                    </button>
+
                     <a
                       href={`https://wa.me/+966598862609?text=أريد استفسار عن ${design.title}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white py-2 px-3 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-300 text-center"
+                      className="px-3 py-2 border border-pink-300 text-pink-600 rounded-lg hover:bg-pink-50 transition-colors duration-300 text-sm font-medium"
                     >
-                      استفسار واتساب
+                      استفسار
                     </a>
                   </div>
                 </div>

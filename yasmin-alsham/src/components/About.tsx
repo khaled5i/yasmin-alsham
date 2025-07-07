@@ -151,7 +151,7 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               viewport={{ once: true }}
-              className="grid sm:grid-cols-2 gap-4"
+              className="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4"
             >
               {features.map((feature, index) => (
                 <motion.div
@@ -166,13 +166,13 @@ export default function About() {
                   }}
                   className="group relative overflow-hidden"
                 >
-                  <div className="relative flex items-start space-x-4 space-x-reverse p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-pink-100/50 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <feature.icon className="w-7 h-7 text-white" />
+                  <div className="relative flex items-start space-x-3 space-x-reverse p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-pink-100/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-pink-400 to-rose-500 rounded-lg sm:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <feature.icon className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-gray-800 mb-2 text-lg">{feature.title}</h3>
-                      <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                      <h3 className="font-bold text-gray-800 mb-1 sm:mb-2 text-sm sm:text-lg leading-tight">{feature.title}</h3>
+                      <p className="text-gray-600 leading-relaxed text-xs sm:text-sm">{feature.description}</p>
                     </div>
 
                     {/* تأثير الهوفر */}

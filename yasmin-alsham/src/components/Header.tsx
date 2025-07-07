@@ -1,16 +1,46 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Menu, X, Calendar, Search, Scissors, Palette, Home } from 'lucide-react'
+import { Menu, X, Calendar, Search, Scissors, Palette, Home, Heart, ShoppingBag } from 'lucide-react'
+import { useShopStore } from '@/store/shopStore'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [clickCount, setClickCount] = useState(0)
+  const [isHydrated, setIsHydrated] = useState(false)
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const router = useRouter()
+
+  // استخدام متجر التسوق
+  const { favorites, cart, getCartItemsCount } = useShopStore()
+
+  // Safe hydration for cart and favorites counts
+  const [cartItemsCount, setCartItemsCount] = useState(0)
+  const [favoritesCount, setFavoritesCount] = useState(0)
+
+  // Handle client-side hydration
+  useEffect(() => {
+    // Mark as hydrated and set initial counts
+    setIsHydrated(true)
+    setCartItemsCount(getCartItemsCount())
+    setFavoritesCount(favorites.length)
+  }, [])
+
+  // Update counts when store changes (only after hydration)
+  useEffect(() => {
+    if (isHydrated) {
+      setCartItemsCount(getCartItemsCount())
+    }
+  }, [cart, getCartItemsCount, isHydrated])
+
+  useEffect(() => {
+    if (isHydrated) {
+      setFavoritesCount(favorites.length)
+    }
+  }, [favorites, isHydrated])
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -51,24 +81,65 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-pink-100 shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* الشعار */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+
+          {/* أيقونة القائمة - الهاتف المحمول فقط */}
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="flex items-center space-x-2 space-x-reverse cursor-pointer hover:opacity-80 transition-opacity duration-300"
+            onClick={toggleMenu}
+            className="lg:hidden p-2 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 text-pink-600 hover:from-pink-200 hover:to-rose-200 transition-all duration-300"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </motion.button>
+
+          {/* الشعار - متوسط للهاتف المحمول */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="cursor-pointer hover:opacity-80 transition-opacity duration-300 lg:flex lg:items-center lg:space-x-2 lg:space-x-reverse"
             onClick={handleLogoClick}
           >
+            <div className="text-center lg:text-right">
+              <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+                ياسمين الشام
+              </h1>
+              {/* إخفاء العنوان الفرعي في الهاتف المحمول */}
+              <p className="hidden lg:block text-xs lg:text-sm text-gray-600 font-medium">
+                تفصيل فساتين حسب الطلب
+              </p>
+            </div>
+          </motion.div>
 
-              <div className="text-right">
-                <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                  ياسمين الشام
-                </h1>
-                <p className="text-xs lg:text-sm text-gray-600 font-medium">
-                  تفصيل فساتين حسب الطلب
-                </p>
-              </div>
-            </motion.div>
+          {/* أيقونات المفضلة والسلة - الهاتف المحمول فقط */}
+          <div className="flex items-center space-x-3 space-x-reverse lg:hidden">
+            {/* أيقونة المفضلة */}
+            <Link
+              href="/favorites"
+              className="relative p-2 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 text-pink-600 hover:from-pink-200 hover:to-rose-200 transition-all duration-300"
+            >
+              <Heart className="w-5 h-5" />
+              {isHydrated && favoritesCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  {favoritesCount > 9 ? '9+' : favoritesCount}
+                </span>
+              )}
+            </Link>
+
+            {/* أيقونة السلة */}
+            <Link
+              href="/cart"
+              className="relative p-2 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 text-pink-600 hover:from-pink-200 hover:to-rose-200 transition-all duration-300"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {isHydrated && cartItemsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  {cartItemsCount > 9 ? '9+' : cartItemsCount}
+                </span>
+              )}
+            </Link>
+          </div>
 
           {/* القائمة الرئيسية - الشاشات الكبيرة */}
           <nav className="hidden lg:flex items-center space-x-8 space-x-reverse">
@@ -94,17 +165,6 @@ export default function Header() {
               </motion.div>
             ))}
           </nav>
-
-          {/* زر القائمة - الشاشات الصغيرة */}
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            onClick={toggleMenu}
-            className="lg:hidden p-2 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 text-pink-600 hover:from-pink-200 hover:to-rose-200 transition-all duration-300"
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </motion.button>
         </div>
 
         {/* القائمة المنسدلة - الشاشات الصغيرة */}

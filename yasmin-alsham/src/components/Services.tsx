@@ -59,8 +59,14 @@ export default function Services() {
     }
   ]
 
-  // عرض خدمتين فقط على الجوال إذا لم يتم الضغط على "عرض الكل"
-  const displayedServices = showAllServices ? services : services.slice(0, 2)
+  // عرض 4 خدمات محددة على الجوال: حجز موعد، استفسار طلب، الأقمشة، التصاميم الجاهزة
+  const mobileServices = [
+    services[0], // حجز موعد
+    services[1], // استعلام عن الطلب
+    services[3], // أقمشة متنوعة
+    services[4]  // فساتين جاهزة
+  ]
+  const displayedServices = showAllServices ? services : mobileServices
 
   return (
     <section className="py-20 bg-white">
@@ -130,8 +136,8 @@ export default function Services() {
             ))}
           </div>
 
-          {/* عرض الخدمات على الجوال */}
-          <div className="md:hidden col-span-full">
+          {/* عرض الخدمات على الجوال - شبكة 2x2 */}
+          <div className="md:hidden col-span-full grid grid-cols-2 gap-4">
             {displayedServices.map((service, index) => (
               <motion.div
                 key={index}
@@ -139,21 +145,21 @@ export default function Services() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="group mb-6"
+                className="group"
               >
                 <Link href={service.link}>
-                  <div className={`relative p-6 rounded-2xl bg-gradient-to-br ${service.bgColor} border border-gray-100 hover:shadow-xl transition-all duration-500 transform hover:scale-105 cursor-pointer`}>
+                  <div className={`relative p-4 rounded-xl bg-gradient-to-br ${service.bgColor} border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer h-full`}>
                     {/* الأيقونة */}
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                      <service.icon className="w-7 h-7 text-white" />
+                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${service.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                      <service.icon className="w-5 h-5 text-white" />
                     </div>
 
                     {/* المحتوى */}
-                    <div className="space-y-3">
-                      <h3 className="text-lg font-bold text-gray-800 group-hover:text-pink-600 transition-colors duration-300">
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-bold text-gray-800 group-hover:text-pink-600 transition-colors duration-300 leading-tight">
                         {service.title}
                       </h3>
-                      <p className="text-gray-600 leading-relaxed text-sm">
+                      <p className="text-gray-600 text-xs leading-relaxed line-clamp-2">
                         {service.description}
                       </p>
                     </div>

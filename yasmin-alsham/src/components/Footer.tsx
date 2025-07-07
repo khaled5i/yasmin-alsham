@@ -62,8 +62,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-12">
           {/* معلومات المحل */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -113,9 +113,10 @@ export default function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
+            className="md:col-span-1"
           >
-            <h4 className="text-xl font-bold mb-6 text-pink-400">روابط سريعة</h4>
-            <ul className="space-y-4">
+            <h4 className="text-lg lg:text-xl font-bold mb-4 lg:mb-6 text-pink-400">روابط سريعة</h4>
+            <ul className="space-y-2 lg:space-y-4">
               {quickLinks.map((link, index) => (
                 <motion.li
                   key={link.href}
@@ -142,9 +143,10 @@ export default function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
+            className="md:col-span-1"
           >
-            <h4 className="text-xl font-bold mb-6 text-pink-400">تواصل معنا</h4>
-            <div className="space-y-4">
+            <h4 className="text-lg lg:text-xl font-bold mb-4 lg:mb-6 text-pink-400">تواصل معنا</h4>
+            <div className="space-y-3 lg:space-y-4">
               <div className="icon-text-spacing items-start text-gray-300">
                 <MapPin className="w-5 h-5 text-pink-400 mt-1 menu-item-icon" />
                 <div>
@@ -192,9 +194,10 @@ export default function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
+            className="md:col-span-2 lg:col-span-1"
           >
-            <h4 className="text-xl font-bold mb-6 text-pink-400">ساعات العمل</h4>
-            <div className="space-y-4">
+            <h4 className="text-lg lg:text-xl font-bold mb-4 lg:mb-6 text-pink-400">ساعات العمل</h4>
+            <div className="space-y-3 lg:space-y-4">
               <div className="flex items-center space-x-3 space-x-reverse text-gray-300 mb-4">
                 <Clock className="w-5 h-5 text-pink-400" />
                 <span className="font-medium">جدول العمل</span>

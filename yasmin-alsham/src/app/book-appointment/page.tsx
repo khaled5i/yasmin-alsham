@@ -176,16 +176,16 @@ export default function BookAppointmentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-16 lg:pt-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-12">
         {/* زر العودة للصفحة الرئيسية */}
-        <div className="mb-8">
+        <div className="mb-4 lg:mb-8">
           <Link
             href="/"
             className="inline-flex items-center space-x-2 space-x-reverse text-pink-600 hover:text-pink-700 transition-colors duration-300 group"
           >
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-            <span className="font-medium">العودة للصفحة الرئيسية</span>
+            <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 transition-transform duration-300" />
+            <span className="font-medium text-sm lg:text-base">العودة للصفحة الرئيسية</span>
           </Link>
         </div>
 
@@ -207,7 +207,7 @@ export default function BookAppointmentPage() {
         </motion.div>
 
         <div className="max-w-4xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
             {/* معلومات المواعيد */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -215,20 +215,20 @@ export default function BookAppointmentPage() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="space-y-8"
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-pink-100">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center space-x-3 space-x-reverse">
-                  <Calendar className="w-6 h-6 text-pink-600" />
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl lg:rounded-2xl p-4 lg:p-8 border border-pink-100">
+                <h3 className="text-lg lg:text-2xl font-bold text-gray-800 mb-4 lg:mb-6 flex items-center space-x-2 lg:space-x-3 space-x-reverse">
+                  <Calendar className="w-5 h-5 lg:w-6 lg:h-6 text-pink-600" />
                   <span>معلومات المواعيد</span>
                 </h3>
-                
-                <div className="space-y-6">
-                  <div className="flex items-start space-x-4 space-x-reverse">
-                    <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-6 h-6 text-white" />
+
+                <div className="space-y-4 lg:space-y-6">
+                  <div className="flex items-start space-x-3 lg:space-x-4 space-x-reverse">
+                    <div className="w-8 h-8 lg:w-12 lg:h-12 bg-gradient-to-br from-pink-400 to-rose-400 rounded-lg lg:rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-800 mb-2">أوقات العمل</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
+                      <h4 className="font-bold text-gray-800 mb-1 lg:mb-2 text-sm lg:text-base">أوقات العمل</h4>
+                      <p className="text-gray-600 text-xs lg:text-sm leading-relaxed">
                         نعمل 6 أيام في الأسبوع (عدا الجمعة)
                       </p>
                     </div>
@@ -236,15 +236,15 @@ export default function BookAppointmentPage() {
                   
 
                   
-                  <div className="flex items-start space-x-4 space-x-reverse">
-                    <div className="w-12 h-12 bg-gradient-to-br from-rose-400 to-purple-400 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <MessageSquare className="w-6 h-6 text-white" />
+                  <div className="flex items-start space-x-3 lg:space-x-4 space-x-reverse">
+                    <div className="w-8 h-8 lg:w-12 lg:h-12 bg-gradient-to-br from-rose-400 to-purple-400 rounded-lg lg:rounded-xl flex items-center justify-center flex-shrink-0">
+                      <MessageSquare className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-800 mb-2">التذكيرات</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        سنرسل لك تذكيراً تلقائياً<br />
-                        قبل موعدك بساعتين عبر الرسائل النصية
+                      <h4 className="font-bold text-gray-800 mb-1 lg:mb-2 text-sm lg:text-base">التذكيرات</h4>
+                      <p className="text-gray-600 text-xs lg:text-sm leading-relaxed">
+                        سنرسل لك تذكيراً تلقائياً<br className="hidden lg:block" />
+                        <span className="lg:hidden"> </span>قبل موعدك بساعتين عبر الرسائل النصية
                       </p>
                     </div>
                   </div>
@@ -252,32 +252,32 @@ export default function BookAppointmentPage() {
               </div>
 
               {/* معلومات زمن التفصيل */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-pink-100">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center space-x-3 space-x-reverse">
-                  <Clock className="w-6 h-6 text-pink-600" />
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl lg:rounded-2xl p-4 lg:p-8 border border-pink-100">
+                <h3 className="text-lg lg:text-2xl font-bold text-gray-800 mb-4 lg:mb-6 flex items-center space-x-2 lg:space-x-3 space-x-reverse">
+                  <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-pink-600" />
                   <span>معلومات زمن التفصيل</span>
                 </h3>
 
-                <div className="space-y-6">
-                  <div className="flex items-start space-x-4 space-x-reverse">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Calendar className="w-6 h-6 text-white" />
+                <div className="space-y-4 lg:space-y-6">
+                  <div className="flex items-start space-x-3 lg:space-x-4 space-x-reverse">
+                    <div className="w-8 h-8 lg:w-12 lg:h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg lg:rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Calendar className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-800 mb-2">مدة التفصيل</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
+                      <h4 className="font-bold text-gray-800 mb-1 lg:mb-2 text-sm lg:text-base">مدة التفصيل</h4>
+                      <p className="text-gray-600 text-xs lg:text-sm leading-relaxed">
                         يستغرق تفصيل الفستان من <span className="font-semibold text-pink-600">7 إلى 14 يوم عمل</span>
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start space-x-4 space-x-reverse">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-400 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <AlertCircle className="w-6 h-6 text-white" />
+                  <div className="flex items-start space-x-3 lg:space-x-4 space-x-reverse">
+                    <div className="w-8 h-8 lg:w-12 lg:h-12 bg-gradient-to-br from-orange-400 to-red-400 rounded-lg lg:rounded-xl flex items-center justify-center flex-shrink-0">
+                      <AlertCircle className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-800 mb-2">ملاحظة مهمة</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
+                      <h4 className="font-bold text-gray-800 mb-1 lg:mb-2 text-sm lg:text-base">ملاحظة مهمة</h4>
+                      <p className="text-gray-600 text-xs lg:text-sm leading-relaxed">
                         قد تختلف مدة التفصيل في المواسم بسبب الضغط، يرجى التواصل عبر الواتساب لمزيد من المعلومات
                       </p>
                     </div>

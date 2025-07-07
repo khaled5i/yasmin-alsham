@@ -4,6 +4,7 @@ export interface Design {
   description: string
   category: string
   images: string[]
+  price: number
 
   fabric?: string
   colors?: string[]
@@ -21,6 +22,7 @@ export const allDesigns: Design[] = [
     title: 'فستان زفاف كلاسيكي',
     description: 'فستان زفاف أنيق بتصميم كلاسيكي مع تطريز يدوي رائع يجمع بين الأناقة والفخامة',
     category: 'فساتين زفاف',
+    price: 1299,
     images: [
       '/wedding-dress-1.jpg.jpg',
       '/wedding-dress-1a.jpg.jpg',
@@ -51,6 +53,7 @@ export const allDesigns: Design[] = [
     title: 'فستان سهرة راقي',
     description: 'فستان سهرة طويل بقصة عصرية ولمسات ذهبية تضفي لمسة من الفخامة والأناقة',
     category: 'فساتين سهرة',
+    price: 899,
     images: [
       '/wedding-dress-2.jpg.jpg',
       '/wedding-dress-2a.jpg.jpg',
@@ -79,6 +82,7 @@ export const allDesigns: Design[] = [
     title: 'فستان كوكتيل أنيق',
     description: 'فستان كوكتيل قصير بتصميم عصري ومميز يناسب المناسبات الاجتماعية والحفلات',
     category: 'فساتين كوكتيل',
+    price: 599,
     images: [
       '/wedding-dress-3.jpg.jpg',
       '/wedding-dress-3a.jpg.jpg',
@@ -107,6 +111,7 @@ export const allDesigns: Design[] = [
     title: 'فستان مناسبات خاصة',
     description: 'فستان أنيق للمناسبات الخاصة بتصميم راقي وتفاصيل مميزة',
     category: 'فساتين مناسبات',
+    price: 749,
     images: [
       '/wedding-dress-4.jpg.jpg',
       '/wedding-dress-4a.jpg.jpg',
@@ -135,6 +140,7 @@ export const allDesigns: Design[] = [
     title: 'فستان زفاف ملكي',
     description: 'فستان زفاف فاخر بتصميم ملكي مع تنورة واسعة وتطريز كريستالي',
     category: 'فساتين زفاف',
+    price: 1599,
     images: [
       '/wedding-dress-5.jpg.jpg',
       '/wedding-dress-5a.jpg.jpg',
@@ -163,6 +169,7 @@ export const allDesigns: Design[] = [
     title: 'فستان سهرة كلاسيكي',
     description: 'فستان سهرة بتصميم كلاسيكي خالد مع لمسات عصرية أنيقة',
     category: 'فساتين سهرة',
+    price: 799,
     images: [
       '/wedding-dress-6.jpg.jpg',
       '/wedding-dress-6a.jpg.jpg',
@@ -191,6 +198,7 @@ export const allDesigns: Design[] = [
     title: 'فستان كوكتيل عصري',
     description: 'فستان كوكتيل بتصميم عصري جريء مع تفاصيل مميزة وقصة عملية',
     category: 'فساتين كوكتيل',
+    price: 649,
     images: [
       '/wedding-dress-7.jpg.jpg',
       '/wedding-dress-7a.jpg.jpg',
@@ -219,6 +227,7 @@ export const allDesigns: Design[] = [
     title: 'فستان مناسبات راقي',
     description: 'فستان راقي للمناسبات الخاصة بتصميم أنيق وتفاصيل فاخرة',
     category: 'فساتين مناسبات',
+    price: 849,
     images: [
       '/wedding-dress-8.jpg.jpg',
       '/wedding-dress-8a.jpg.jpg',
@@ -247,6 +256,7 @@ export const allDesigns: Design[] = [
     title: 'فستان زفاف رومانسي',
     description: 'فستان زفاف رومانسي بتصميم حالم مع تفاصيل من الدانتيل والورود',
     category: 'فساتين زفاف',
+    price: 1199,
     images: [
       '/wedding-dress-9.jpg.jpg',
       '/wedding-dress-9a.jpg.jpg',
@@ -275,6 +285,7 @@ export const allDesigns: Design[] = [
     title: 'فستان سهرة فاخر',
     description: 'فستان سهرة فاخر بتصميم مميز مع تطريز كريستالي وقصة أنيقة',
     category: 'فساتين سهرة',
+    price: 999,
     images: [
       '/wedding-dress-10.jpg.jpg',
       '/wedding-dress-10a.jpg.jpg',
@@ -303,6 +314,7 @@ export const allDesigns: Design[] = [
     title: 'فستان كوكتيل مميز',
     description: 'فستان كوكتيل مميز بتصميم جريء وألوان زاهية مناسب للحفلات',
     category: 'فساتين كوكتيل',
+    price: 699,
     images: [
       '/wedding-dress-11.jpg.jpg',
       '/wedding-dress-11a.jpg.jpg',
@@ -331,6 +343,7 @@ export const allDesigns: Design[] = [
     title: 'فستان مناسبات كلاسيكي',
     description: 'فستان كلاسيكي للمناسبات بتصميم خالد وأناقة لا تنتهي',
     category: 'فساتين مناسبات',
+    price: 799,
     images: [
       '/wedding-dress-12.jpg.jpg',
       '/wedding-dress-12a.jpg.jpg',
