@@ -338,7 +338,7 @@ export default function WorkersPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('phone_required')}
+                  {t('phone_required_worker')}
                 </label>
                 <input
                   type="tel"
@@ -453,7 +453,7 @@ export default function WorkersPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t('phone_required')}
+                      {t('phone_required_worker')}
                     </label>
                     <input
                       type="tel"
