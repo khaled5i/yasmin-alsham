@@ -19,8 +19,14 @@ export default function DesignDetailPage() {
   const [selectedColor, setSelectedColor] = useState('')
 
   // متجر التسوق
-  const { addToFavorites, removeFromFavorites, isFavorite, addToCart } = useShopStore()
+  const { addToFavorites, removeFromFavorites, isFavorite, addToCart, removeFromCart, isInCart } = useShopStore()
   const [addedToCart, setAddedToCart] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  // التأكد من أن الكود يعمل على العميل فقط
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     if (design?.sizes && design.sizes.length > 0) {
@@ -75,12 +81,26 @@ export default function DesignDetailPage() {
       category: design.category
     }
 
-    addToCart(product, 1, selectedSize, selectedColor)
-    setAddedToCart(true)
-    setTimeout(() => {
+    if (isInCart(product.id)) {
+      // إذا كان المنتج في السلة، قم بإزالته
+      removeFromCart(product.id)
       setAddedToCart(false)
-    }, 2000)
+      localStorage.removeItem(`addedToCart_${design.id}`)
+    } else {
+      // إذا لم يكن المنتج في السلة، قم بإضافته
+      addToCart(product, 1, selectedSize, selectedColor)
+      setAddedToCart(true)
+      localStorage.setItem(`addedToCart_${design.id}`, 'true')
+    }
   }
+
+  // تحميل الحالة المحفوظة عند تحميل الصفحة
+  useEffect(() => {
+    const savedState = localStorage.getItem(`addedToCart_${design.id}`)
+    if (savedState === 'true') {
+      setAddedToCart(true)
+    }
+  }, [design.id])
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % design.images.length)
@@ -197,27 +217,8 @@ export default function DesignDetailPage() {
 
             {/* السعر */}
             <div className="text-3xl font-bold text-pink-600">
-              {formatPrice(design.price)}
+              السعر : {formatPrice(design.price)}
             </div>
-
-            {/* التقييم */}
-            {design.rating && (
-              <div className="flex items-center space-x-2 space-x-reverse">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-5 h-5 ${
-                        i < Math.floor(design.rating!) ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-gray-600">
-                  {design.rating} ({design.reviews_count} تقييم)
-                </span>
-              </div>
-            )}
 
             {/* خيارات المقاس */}
             {design.sizes && design.sizes.length > 0 && (
@@ -267,26 +268,25 @@ export default function DesignDetailPage() {
             <div className="flex gap-4">
               <button
                 onClick={handleAddToCart}
-                disabled={addedToCart}
                 className={`flex-1 flex items-center justify-center space-x-2 space-x-reverse py-3 px-6 rounded-full text-lg font-medium transition-all duration-300 ${
-                  addedToCart
-                    ? 'bg-green-500 text-white'
+                  isClient && isInCart(design.id.toString())
+                    ? 'bg-red-500 hover:bg-red-600 text-white'
                     : 'bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:shadow-lg'
                 }`}
               >
                 <ShoppingBag className="w-5 h-5" />
-                <span>{addedToCart ? 'تم الإضافة للسلة' : 'أضف للسلة'}</span>
+                <span>{isClient && isInCart(design.id.toString()) ? 'أزل من السلة' : 'أضف للسلة'}</span>
               </button>
 
               <button
                 onClick={handleToggleFavorite}
                 className={`p-3 rounded-full border-2 transition-all duration-300 ${
-                  isFavorite(design.id.toString())
+                  isClient && isFavorite(design.id.toString())
                     ? 'border-red-500 bg-red-500 text-white'
                     : 'border-pink-300 text-pink-600 hover:bg-pink-50'
                 }`}
               >
-                <Heart className={`w-6 h-6 ${isFavorite(design.id.toString()) ? 'fill-current' : ''}`} />
+                <Heart className={`w-6 h-6 ${isClient && isFavorite(design.id.toString()) ? 'fill-current' : ''}`} />
               </button>
             </div>
 

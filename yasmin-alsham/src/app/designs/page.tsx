@@ -3,13 +3,11 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRight, Eye, Heart, X, ChevronLeft, ChevronRight, Grid3X3, Grid2X2, ShoppingBag } from 'lucide-react'
+import { ArrowRight, Heart, ChevronLeft, ChevronRight, Grid3X3, Grid2X2, ShoppingBag } from 'lucide-react'
 import { allDesigns } from '@/data/designs'
 import { useShopStore, formatPrice } from '@/store/shopStore'
 
 export default function DesignsPage() {
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false)
   const [currentImageIndexes, setCurrentImageIndexes] = useState<{[key: number]: number}>({
     1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0
   })
@@ -18,8 +16,14 @@ export default function DesignsPage() {
   const [isSingleColumn, setIsSingleColumn] = useState(false)
 
   // متجر التسوق
-  const { addToFavorites, removeFromFavorites, isFavorite, addToCart } = useShopStore()
+  const { addToFavorites, removeFromFavorites, isFavorite, addToCart, removeFromCart, isInCart } = useShopStore()
   const [addedToCart, setAddedToCart] = useState<number[]>([])
+  const [isClient, setIsClient] = useState(false)
+
+  // التأكد من أن الكود يعمل على العميل فقط
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   // تحميل حالة العرض من localStorage
   useEffect(() => {
@@ -66,12 +70,32 @@ export default function DesignsPage() {
       category: design.category
     }
 
-    addToCart(product)
-    setAddedToCart(prev => [...prev, design.id])
-    setTimeout(() => {
+    if (isInCart(product.id)) {
+      // إذا كان المنتج في السلة، قم بإزالته
+      removeFromCart(product.id)
       setAddedToCart(prev => prev.filter(id => id !== design.id))
-    }, 2000)
+      
+      // إزالة من localStorage
+      const savedAddedToCart = JSON.parse(localStorage.getItem('addedToCart') || '[]')
+      const updatedAddedToCart = savedAddedToCart.filter((id: number) => id !== design.id)
+      localStorage.setItem('addedToCart', JSON.stringify(updatedAddedToCart))
+    } else {
+      // إذا لم يكن المنتج في السلة، قم بإضافته
+      addToCart(product)
+      setAddedToCart(prev => [...prev, design.id])
+      
+      // حفظ الحالة في localStorage بشكل دائم
+      const savedAddedToCart = JSON.parse(localStorage.getItem('addedToCart') || '[]')
+      const updatedAddedToCart = [...savedAddedToCart, design.id]
+      localStorage.setItem('addedToCart', JSON.stringify(updatedAddedToCart))
+    }
   }
+
+  // تحميل الحالة المحفوظة عند تحميل الصفحة
+  useEffect(() => {
+    const savedAddedToCart = JSON.parse(localStorage.getItem('addedToCart') || '[]')
+    setAddedToCart(savedAddedToCart)
+  }, [])
 
 
 
@@ -102,59 +126,9 @@ export default function DesignsPage() {
     }))
   }
 
-  // دوال إدارة المعرض
-  const openGallery = (index: number) => {
-    setSelectedImageIndex(index)
-    setIsGalleryOpen(true)
-    document.body.style.overflow = 'hidden'
-  }
 
-  const closeGallery = () => {
-    setIsGalleryOpen(false)
-    setSelectedImageIndex(null)
-    document.body.style.overflow = 'unset'
-  }
 
-  const nextImage = () => {
-    if (selectedImageIndex !== null) {
-      const designId = allDesigns[selectedImageIndex].id
-      setCurrentImageIndexes(prev => ({
-        ...prev,
-        [designId]: (prev[designId] + 1) % 3
-      }))
-    }
-  }
 
-  const prevImage = () => {
-    if (selectedImageIndex !== null) {
-      const designId = allDesigns[selectedImageIndex].id
-      setCurrentImageIndexes(prev => ({
-        ...prev,
-        [designId]: prev[designId] === 0 ? 2 : prev[designId] - 1
-      }))
-    }
-  }
-
-  // إدارة مفتاح Escape
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isGalleryOpen) {
-        closeGallery()
-      }
-      if (event.key === 'ArrowRight' && isGalleryOpen) {
-        nextImage()
-      }
-      if (event.key === 'ArrowLeft' && isGalleryOpen) {
-        prevImage()
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = 'unset'
-    }
-  }, [isGalleryOpen, selectedImageIndex])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-4 lg:pt-6">
@@ -239,83 +213,53 @@ export default function DesignsPage() {
             >
               <div className="relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
                 {/* الصورة */}
-                <div
-                  className="aspect-[4/5] bg-gradient-to-br from-pink-100 via-rose-100 to-purple-100 relative overflow-hidden cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    openGallery(index)
-                  }}
-                >
-
-                  
-                  {/* الصورة الحالية */}
-                  <img
-                    src={design.images[currentImageIndexes[design.id]]}
-                    alt={`${design.title} - صورة ${currentImageIndexes[design.id] + 1}`}
-                    className="w-full h-full object-cover transition-opacity duration-300"
-                  />
-
-                  {/* أزرار التنقل */}
-                  <button
-                    onClick={(e) => prevCardImage(design.id, e)}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
-                    aria-label="الصورة السابقة"
+                <Link href={`/designs/${design.id}`}>
+                  <div
+                    className="aspect-[4/5] bg-gradient-to-br from-pink-100 via-rose-100 to-purple-100 relative overflow-hidden cursor-pointer"
                   >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+                    {/* الصورة الحالية */}
+                    <img
+                      src={design.images[currentImageIndexes[design.id]]}
+                      alt={`${design.title} - صورة ${currentImageIndexes[design.id] + 1}`}
+                      className="w-full h-full object-cover transition-opacity duration-300"
+                    />
 
-                  <button
-                    onClick={(e) => nextCardImage(design.id, e)}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
-                    aria-label="الصورة التالية"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
+                    {/* أزرار التنقل */}
+                    <button
+                      onClick={(e) => prevCardImage(design.id, e)}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+                      aria-label="الصورة السابقة"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
 
-                  {/* مؤشرات الصور */}
-                  <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1 space-x-reverse opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {design.images.map((_, imgIndex) => (
-                      <button
-                        key={imgIndex}
-                        onClick={(e) => setCardImage(design.id, imgIndex, e)}
-                        className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                          currentImageIndexes[design.id] === imgIndex ? 'bg-white' : 'bg-white/50'
-                        }`}
-                        aria-label={`عرض الصورة ${imgIndex + 1}`}
-                      />
-                    ))}
-                  </div>
-                  
-                  {/* تأثير التمرير */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3">
-                      <Eye className="w-6 h-6 text-pink-600" />
+                    <button
+                      onClick={(e) => nextCardImage(design.id, e)}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+                      aria-label="الصورة التالية"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+
+                    {/* مؤشرات الصور */}
+                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1 space-x-reverse opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {design.images.map((_, imgIndex) => (
+                        <button
+                          key={imgIndex}
+                          onClick={(e) => setCardImage(design.id, imgIndex, e)}
+                          className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                            currentImageIndexes[design.id] === imgIndex ? 'bg-white' : 'bg-white/50'
+                          }`}
+                          aria-label={`عرض الصورة ${imgIndex + 1}`}
+                        />
+                      ))}
                     </div>
                   </div>
-                  
-                  {/* زر المفضلة */}
-                  <button
-                    onClick={(e) => handleToggleFavorite(design, e)}
-                    className={`absolute top-3 left-3 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 ${
-                      isFavorite(design.id.toString())
-                        ? 'bg-red-500 text-white'
-                        : 'bg-white/80 hover:bg-white text-pink-500'
-                    }`}
-                  >
-                    <Heart className={`w-4 h-4 ${isFavorite(design.id.toString()) ? 'fill-current' : ''}`} />
-                  </button>
-                </div>
-                
+                </Link>
                 {/* المعلومات */}
                 <div className="p-4">
                   <Link href={`/designs/${design.id}`}>
                     <div className="cursor-pointer hover:bg-gray-50 transition-colors duration-300 p-2 -m-2 rounded-lg mb-4">
-                      <div className="mb-3">
-                        <span className="bg-gradient-to-r from-pink-100 to-rose-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">
-                          {design.category}
-                        </span>
-                      </div>
-
                       <h3 className="font-bold text-gray-800 mb-2 group-hover:text-pink-600 transition-colors duration-300">
                         {design.title}
                       </h3>
@@ -326,7 +270,7 @@ export default function DesignsPage() {
 
                       {/* السعر */}
                       <div className="text-lg font-bold text-pink-600 mb-3">
-                        {formatPrice(design.price)}
+                        السعر : {formatPrice(design.price)}
                       </div>
                     </div>
                   </Link>
@@ -335,25 +279,26 @@ export default function DesignsPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={(e) => handleAddToCart(design, e)}
-                      disabled={addedToCart.includes(design.id)}
                       className={`btn-primary flex-1 flex items-center justify-center space-x-1 space-x-reverse py-2 px-3 text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                        addedToCart.includes(design.id) ? 'bg-green-500 text-white' : ''
+                        isClient && isInCart(design.id.toString()) ? 'bg-red-500 hover:bg-red-600 text-white' : ''
                       }`}
                     >
                       <span className="hidden sm:inline-block">
                         <ShoppingBag className="w-4 h-4" />
                       </span>
-                      <span className="whitespace-nowrap">{addedToCart.includes(design.id) ? 'تم الإضافة' : 'أضف للسلة'}</span>
+                      <span className="whitespace-nowrap">{isClient && isInCart(design.id.toString()) ? 'أزل من السلة' : 'أضف للسلة'}</span>
                     </button>
-
-                    <a
-                      href={`https://wa.me/+966598862609?text=أريد استفسار عن ${design.title}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-2 border border-pink-300 text-pink-600 rounded-lg hover:bg-pink-50 transition-colors duration-300 text-sm font-medium"
+                    
+                    <button
+                      onClick={(e) => handleToggleFavorite(design, e)}
+                      className={`p-2 rounded-full border-2 transition-all duration-300 hover:scale-110 ${
+                        isClient && isFavorite(design.id.toString())
+                          ? 'border-red-500 bg-red-500 text-white'
+                          : 'border-pink-300 text-pink-600 hover:bg-pink-50'
+                      }`}
                     >
-                      استفسار
-                    </a>
+                      <Heart className={`w-4 h-4 ${isClient && isFavorite(design.id.toString()) ? 'fill-current' : ''}`} />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -363,61 +308,7 @@ export default function DesignsPage() {
 
 
 
-        {/* نافذة المعرض المنبثقة */}
-        {isGalleryOpen && selectedImageIndex !== null && (
-          <div
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={closeGallery}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="gallery-title"
-          >
-            <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
-              {/* زر الإغلاق */}
-              <button
-                onClick={closeGallery}
-                className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-2 transition-colors duration-300"
-                aria-label="إغلاق المعرض"
-              >
-                <X className="w-6 h-6" />
-              </button>
 
-              {/* أزرار التنقل */}
-              <button
-                onClick={prevImage}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-colors duration-300"
-                aria-label="الصورة السابقة"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-
-              <button
-                onClick={nextImage}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-colors duration-300"
-                aria-label="الصورة التالية"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-
-              {/* الصورة */}
-              <motion.div
-                key={selectedImageIndex}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-2xl overflow-hidden shadow-2xl"
-              >
-                <div className="aspect-[4/5] bg-gradient-to-br from-pink-100 via-rose-100 to-purple-100 flex items-center justify-center">
-                  <img
-                    src={allDesigns[selectedImageIndex].images[currentImageIndexes[allDesigns[selectedImageIndex].id]]}
-                    alt={`${allDesigns[selectedImageIndex].title} - صورة ${currentImageIndexes[allDesigns[selectedImageIndex].id] + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )

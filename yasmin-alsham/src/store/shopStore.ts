@@ -35,6 +35,7 @@ interface ShopState {
   cart: CartItem[]
   addToCart: (product: Product, quantity?: number, size?: string, color?: string) => void
   removeFromCart: (productId: string) => void
+  isInCart: (productId: string) => boolean
   updateCartItemQuantity: (productId: string, quantity: number) => void
   clearCart: () => void
   getCartTotal: () => number
@@ -110,6 +111,11 @@ export const useShopStore = create<ShopState>()(
       removeFromCart: (productId: string) => {
         const { cart } = get()
         set({ cart: cart.filter(item => item.id !== productId) })
+      },
+
+      isInCart: (productId: string) => {
+        const { cart } = get()
+        return cart.some(item => item.id === productId)
       },
 
       updateCartItemQuantity: (productId: string, quantity: number) => {

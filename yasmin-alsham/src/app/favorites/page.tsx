@@ -1,22 +1,48 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Heart, ShoppingBag, Trash2 } from 'lucide-react'
 import { useShopStore, formatPrice } from '@/store/shopStore'
 
 export default function FavoritesPage() {
-  const { favorites, removeFromFavorites, addToCart } = useShopStore()
+  const { favorites, removeFromFavorites, addToCart, removeFromCart, isInCart } = useShopStore()
   const [addedToCart, setAddedToCart] = useState<string[]>([])
+  const [isClient, setIsClient] = useState(false)
+
+  // التأكد من أن الكود يعمل على العميل فقط
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const handleAddToCart = (product: any) => {
-    addToCart(product)
-    setAddedToCart(prev => [...prev, product.id])
-    setTimeout(() => {
+    if (isInCart(product.id)) {
+      // إذا كان المنتج في السلة، قم بإزالته
+      removeFromCart(product.id)
       setAddedToCart(prev => prev.filter(id => id !== product.id))
-    }, 2000)
+      
+      // إزالة من localStorage
+      const savedAddedToCart = JSON.parse(localStorage.getItem('addedToCart') || '[]')
+      const updatedAddedToCart = savedAddedToCart.filter((id: string) => id !== product.id)
+      localStorage.setItem('addedToCart', JSON.stringify(updatedAddedToCart))
+    } else {
+      // إذا لم يكن المنتج في السلة، قم بإضافته
+      addToCart(product)
+      setAddedToCart(prev => [...prev, product.id])
+      
+      // حفظ الحالة في localStorage بشكل دائم
+      const savedAddedToCart = JSON.parse(localStorage.getItem('addedToCart') || '[]')
+      const updatedAddedToCart = [...savedAddedToCart, product.id]
+      localStorage.setItem('addedToCart', JSON.stringify(updatedAddedToCart))
+    }
   }
+
+  // تحميل الحالة المحفوظة عند تحميل الصفحة
+  useEffect(() => {
+    const savedAddedToCart = JSON.parse(localStorage.getItem('addedToCart') || '[]')
+    setAddedToCart(savedAddedToCart)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-4 lg:pt-6">
@@ -90,14 +116,6 @@ export default function FavoritesPage() {
                     alt={product.name}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                   />
-                  
-                  {/* زر إزالة من المفضلة */}
-                  <button
-                    onClick={() => removeFromFavorites(product.id)}
-                    className="absolute top-3 right-3 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-300"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
                 </div>
 
                 {/* تفاصيل المنتج */}
@@ -116,15 +134,21 @@ export default function FavoritesPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleAddToCart(product)}
-                      disabled={addedToCart.includes(product.id)}
                       className={`btn-primary flex-1 flex items-center justify-center space-x-2 space-x-reverse py-2 px-4 transition-all duration-300 ${
-                        addedToCart.includes(product.id) ? 'bg-green-500 text-white' : ''
+                        isClient && isInCart(product.id) ? 'bg-red-500 hover:bg-red-600 text-white' : ''
                       }`}
                     >
                       <ShoppingBag className="w-4 h-4" />
                       <span className="text-sm font-medium">
-                        {addedToCart.includes(product.id) ? 'تم الإضافة' : 'أضف للسلة'}
+                        {isClient && isInCart(product.id) ? 'أزل من السلة' : 'أضف للسلة'}
                       </span>
+                    </button>
+                    
+                    <button
+                      onClick={() => removeFromFavorites(product.id)}
+                      className="p-2 rounded-full border-2 border-red-500 bg-red-500 text-white transition-all duration-300 hover:scale-110 hover:bg-red-600"
+                    >
+                      <Heart className="w-4 h-4 fill-current" />
                     </button>
                     
                     <Link
