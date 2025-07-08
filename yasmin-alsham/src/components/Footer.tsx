@@ -62,8 +62,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-12">
           {/* معلومات المحل */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -107,15 +107,86 @@ export default function Footer() {
             </div>
           </motion.div>
 
-          {/* روابط سريعة */}
+          {/* تخطيط مدمج للهاتف المحمول - روابط سريعة واتصل بنا */}
+          <div className="md:hidden col-span-1">
+            <div className="grid grid-cols-2 gap-4">
+              {/* روابط سريعة - هاتف محمول */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                viewport={{ once: true }}
+              >
+                <h4 className="text-base font-bold mb-3 text-pink-400">روابط سريعة</h4>
+                <ul className="space-y-2">
+                  {quickLinks.map((link, index) => (
+                    <motion.li
+                      key={link.href}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <Link
+                        href={link.href}
+                        className="icon-text-spacing text-gray-300 hover:text-pink-400 transition-colors duration-300 group text-sm"
+                      >
+                        <link.icon className="w-4 h-4 menu-item-icon group-hover:scale-110 transition-transform duration-300" />
+                        <span>{link.label}</span>
+                      </Link>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+
+              {/* معلومات التواصل - هاتف محمول */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <h4 className="text-base font-bold mb-3 text-pink-400">تواصل معنا</h4>
+                <div className="space-y-2">
+                  <div className="icon-text-spacing items-start text-gray-300">
+                    <MapPin className="w-4 h-4 text-pink-400 mt-1 menu-item-icon flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-sm">العنوان</p>
+                      <p className="text-xs text-gray-400 leading-tight">الخبر الشمالية، التقاطع السادس</p>
+                    </div>
+                  </div>
+
+                  <div className="icon-text-spacing items-start text-gray-300">
+                    <Phone className="w-4 h-4 text-pink-400 mt-1 menu-item-icon flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-sm">الهاتف</p>
+                      <a href="tel:+966598862609" className="text-xs text-gray-400 hover:text-pink-400 transition-colors duration-300" dir="ltr">
+                        +966 598 862 609
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="icon-text-spacing items-start text-gray-300">
+                    <Clock className="w-4 h-4 text-pink-400 mt-1 menu-item-icon flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-sm">ساعات العمل</p>
+                      <p className="text-xs text-gray-400">السبت - الخميس</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* روابط سريعة - سطح المكتب */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
-            className="md:col-span-1"
+            className="hidden md:block md:col-span-1"
           >
-            <h4 className="text-lg lg:text-xl font-bold mb-4 lg:mb-6 text-pink-400">روابط سريعة</h4>
+            <h4 className="text-base md:text-lg lg:text-xl font-bold mb-3 md:mb-4 lg:mb-6 text-pink-400">روابط سريعة</h4>
             <ul className="space-y-2 lg:space-y-4">
               {quickLinks.map((link, index) => (
                 <motion.li
@@ -137,16 +208,16 @@ export default function Footer() {
             </ul>
           </motion.div>
 
-          {/* معلومات التواصل */}
+          {/* معلومات التواصل - سطح المكتب */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="md:col-span-1"
+            className="hidden md:block md:col-span-1"
           >
-            <h4 className="text-lg lg:text-xl font-bold mb-4 lg:mb-6 text-pink-400">تواصل معنا</h4>
-            <div className="space-y-3 lg:space-y-4">
+            <h4 className="text-base md:text-lg lg:text-xl font-bold mb-3 md:mb-4 lg:mb-6 text-pink-400">تواصل معنا</h4>
+            <div className="space-y-2 md:space-y-3 lg:space-y-4">
               <div className="icon-text-spacing items-start text-gray-300">
                 <MapPin className="w-5 h-5 text-pink-400 mt-1 menu-item-icon" />
                 <div>
