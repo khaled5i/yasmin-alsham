@@ -80,7 +80,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-pink-100 shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="flex items-center justify-between h-16 lg:h-20 relative">
 
           {/* أيقونة القائمة - الهاتف المحمول فقط */}
           <motion.button
@@ -88,17 +88,17 @@ export default function Header() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
             onClick={toggleMenu}
-            className="lg:hidden p-2 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 text-pink-600 hover:from-pink-200 hover:to-rose-200 transition-all duration-300"
+            className="lg:hidden p-2 rounded-lg text-pink-600 hover:bg-pink-50 transition-all duration-300"
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
           </motion.button>
 
-          {/* الشعار - متوسط للهاتف المحمول */}
+          {/* الشعار - في المنتصف تماماً على الجوال */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="cursor-pointer hover:opacity-80 transition-opacity duration-300 lg:flex lg:items-center lg:space-x-2 lg:space-x-reverse"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:static lg:translate-x-0 lg:translate-y-0 cursor-pointer hover:opacity-80 transition-opacity duration-300 lg:flex lg:items-center lg:space-x-2 lg:space-x-reverse"
             onClick={handleLogoClick}
           >
             <div className="text-center lg:text-right">
@@ -112,27 +112,32 @@ export default function Header() {
             </div>
           </motion.div>
 
-          {/* أيقونات المفضلة والسلة - الهاتف المحمول فقط */}
-          <div className="flex items-center space-x-3 space-x-reverse lg:hidden">
-            {/* أيقونة المفضلة */}
+          {/* أيقونات المفضلة والسلة - تظهر دائماً */}
+          <div className="flex flex-row items-center gap-x-1 lg:gap-x-4 lg:order-2 lg:justify-end lg:w-auto lg:pr-8">
             <Link
               href="/favorites"
-              className="relative p-2 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 text-pink-600 hover:from-pink-200 hover:to-rose-200 transition-all duration-300"
+              className="group relative p-2 rounded-lg text-pink-600 lg:text-black hover:text-pink-600 lg:hover:bg-transparent lg:transition-colors lg:duration-300 flex items-center gap-x-2"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-6 h-6 lg:w-5 lg:h-5" />
+              <span className="hidden lg:inline font-medium text-sm relative">
+                المفضلة
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-400 to-rose-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-right"></span>
+              </span>
               {isHydrated && favoritesCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                   {favoritesCount > 9 ? '9+' : favoritesCount}
                 </span>
               )}
             </Link>
-
-            {/* أيقونة السلة */}
             <Link
               href="/cart"
-              className="relative p-2 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 text-pink-600 hover:from-pink-200 hover:to-rose-200 transition-all duration-300"
+              className="group relative p-2 rounded-lg text-pink-600 lg:text-black hover:text-pink-600 lg:hover:bg-transparent lg:transition-colors lg:duration-300 flex items-center gap-x-2"
             >
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-6 h-6 lg:w-5 lg:h-5" />
+              <span className="hidden lg:inline font-medium text-sm relative">
+                السلة
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-400 to-rose-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-right"></span>
+              </span>
               {isHydrated && cartItemsCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                   {cartItemsCount > 9 ? '9+' : cartItemsCount}
@@ -142,8 +147,8 @@ export default function Header() {
           </div>
 
           {/* القائمة الرئيسية - الشاشات الكبيرة */}
-          <nav className="hidden lg:flex items-center space-x-8 space-x-reverse">
-            {menuItems.map((item, index) => (
+          <nav className="hidden lg:flex flex-1 items-center justify-end gap-x-8 gap-x-reverse lg:order-1">
+            {menuItems.filter(item => item.label !== 'الرئيسية').map((item, index) => (
               <motion.div
                 key={item.href}
                 initial={{ opacity: 0, y: -10 }}

@@ -179,25 +179,6 @@ export default function Services() {
                 </Link>
               </motion.div>
             ))}
-
-            {/* زر عرض جميع الخدمات على الجوال */}
-            {!showAllServices && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                viewport={{ once: true }}
-                className="text-center mt-6"
-              >
-                <button
-                  onClick={() => setShowAllServices(true)}
-                  className="inline-flex items-center justify-center space-x-2 space-x-reverse bg-gradient-to-r from-pink-100 to-purple-100 hover:from-pink-200 hover:to-purple-200 text-pink-700 font-semibold py-3 px-6 rounded-full border border-pink-200 hover:border-pink-300 transition-all duration-300 transform hover:scale-105"
-                >
-                  <span>عرض جميع الخدمات المميزة</span>
-                  <ChevronDown className="w-5 h-5" />
-                </button>
-              </motion.div>
-            )}
           </div>
         </div>
 
@@ -209,18 +190,18 @@ export default function Services() {
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-3xl p-8 lg:p-12">
-            <h3 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-4">
+          <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-3xl p-4 sm:p-8 lg:p-12">
+            <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-2 sm:mb-4">
               جاهزة لتبدئي رحلتك معنا؟
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-xs sm:text-lg text-gray-600 mb-4 sm:mb-8 max-w-2xl mx-auto">
               احجزي موعدك الآن واتركي لنا مهمة تحويل حلمك إلى فستان يعكس شخصيتك المميزة
             </p>
             <Link
               href="/book-appointment"
-              className="btn-primary inline-flex items-center space-x-2 space-x-reverse text-lg group"
+              className="btn-primary inline-flex items-center space-x-2 space-x-reverse text-sm sm:text-lg group"
             >
-              <Calendar className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-300" />
               <span>احجزي موعدك الآن</span>
             </Link>
           </div>

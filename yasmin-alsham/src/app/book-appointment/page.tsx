@@ -176,13 +176,14 @@ export default function BookAppointmentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-16 lg:pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-4 lg:pt-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-12">
         {/* زر العودة للصفحة الرئيسية */}
-        <div className="mb-4 lg:mb-8">
+        <div className="flex justify-start items-start mt-0 mb-2" dir="rtl">
           <Link
             href="/"
             className="inline-flex items-center space-x-2 space-x-reverse text-pink-600 hover:text-pink-700 transition-colors duration-300 group"
+            style={{marginTop: 0}}
           >
             <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 transition-transform duration-300" />
             <span className="font-medium text-sm lg:text-base">العودة للصفحة الرئيسية</span>

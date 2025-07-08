@@ -7,7 +7,7 @@ import { Calendar, Sparkles, Heart, Star } from 'lucide-react'
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 lg:pt-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-8 sm:pt-16 lg:pt-20">
       {/* خلفية متدرجة */}
       <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50"></div>
       
@@ -154,7 +154,7 @@ export default function Hero() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/book-appointment"
-                  className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg border border-pink-500 hover:border-pink-600 transition-all duration-300 inline-flex items-center justify-center space-x-2 space-x-reverse text-lg group shadow-lg hover:shadow-xl"
+                  className="btn-primary inline-flex items-center justify-center space-x-2 space-x-reverse text-lg group"
                 >
                   <Calendar className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                   <span>حجز موعد</span>
@@ -228,7 +228,7 @@ export default function Hero() {
             >
               <Link
                 href="/book-appointment"
-                className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg border border-pink-500 hover:border-pink-600 transition-all duration-300 inline-flex items-center justify-center space-x-2 space-x-reverse text-lg group shadow-lg hover:shadow-xl"
+                className="btn-primary inline-flex items-center justify-center space-x-2 space-x-reverse text-lg group"
               >
                 <Calendar className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                 <span>حجز موعد</span>

@@ -1,26 +1,33 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronUp, ArrowUp } from 'lucide-react'
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false)
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null)
 
-  // إظهار/إخفاء الزر بناءً على موضع التمرير
+  // إظهار/إخفاء الزر بناءً على موضع التمرير والحركة
   useEffect(() => {
-    const toggleVisibility = () => {
+    const handleScroll = () => {
       if (window.pageYOffset > 300) {
         setIsVisible(true)
+        if (scrollTimeout.current) clearTimeout(scrollTimeout.current)
+        scrollTimeout.current = setTimeout(() => {
+          setIsVisible(false)
+        }, 1000)
       } else {
         setIsVisible(false)
+        if (scrollTimeout.current) clearTimeout(scrollTimeout.current)
       }
     }
 
-    window.addEventListener('scroll', toggleVisibility)
+    window.addEventListener('scroll', handleScroll)
 
     return () => {
-      window.removeEventListener('scroll', toggleVisibility)
+      window.removeEventListener('scroll', handleScroll)
+      if (scrollTimeout.current) clearTimeout(scrollTimeout.current)
     }
   }, [])
 

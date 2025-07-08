@@ -80,10 +80,10 @@ export default function About() {
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-3 mb-6 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-pink-200/50 shadow-lg"
+            className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-3 py-2 sm:px-6 sm:py-3 bg-white/80 backdrop-blur-sm rounded-full border border-pink-200/50 shadow-lg"
           >
-            <Scissors className="w-6 h-6 text-pink-500" />
-            <span className="text-pink-600 font-semibold text-lg">حكايتنا</span>
+            <Scissors className="w-4 h-4 sm:w-6 sm:h-6 text-pink-500" />
+            <span className="text-pink-600 font-semibold text-base sm:text-lg">حكايتنا</span>
           </motion.div>
 
           <motion.h2
@@ -103,7 +103,7 @@ export default function About() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
             viewport={{ once: true }}
-            className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+            className="text-sm sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
           >
             رحلة من الشغف والإبداع تمتد عبر عقود من الزمن
           </motion.p>
@@ -126,8 +126,8 @@ export default function About() {
               viewport={{ once: true }}
               className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-pink-100/50 shadow-xl"
             >
-              <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
-                <p className="text-xl font-medium text-gray-800 mb-6">
+              <div className="space-y-6 text-base sm:text-lg text-gray-700 leading-relaxed">
+                <p className="text-base sm:text-lg font-medium text-gray-800 mb-6">
                   في قلب دمشق العريقة، وُلدت فكرة "ياسمين الشام" من حب عميق للتراث والأناقة.
                 </p>
 
@@ -208,13 +208,6 @@ export default function About() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-transparent to-purple-500/10"></div>
 
-                {/* نص على الصورة */}
-                <div className="absolute bottom-6 right-6 left-6">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                    <p className="text-gray-800 font-semibold text-lg">ورشة ياسمين الشام</p>
-                    <p className="text-gray-600">حيث تولد الأحلام وتصبح واقعاً</p>
-                  </div>
-                </div>
               </motion.div>
 
               {/* عناصر زخرفية حول الصورة */}

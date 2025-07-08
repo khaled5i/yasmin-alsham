@@ -76,13 +76,13 @@ export default function FAQ() {
               >
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full px-6 py-6 text-right flex items-center justify-between hover:bg-pink-50/50 transition-colors duration-300"
+                  className="w-full px-3 py-4 sm:px-6 sm:py-6 text-right flex items-center justify-between hover:bg-pink-50/50 transition-colors duration-300"
                 >
-                  <div className="flex items-center space-x-3 space-x-reverse">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center flex-shrink-0">
                       <HelpCircle className="w-4 h-4 text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-800 text-right">
+                    <h3 className="text-sm sm:text-lg font-bold text-gray-800 text-right">
                       {faq.question}
                     </h3>
                   </div>
@@ -105,9 +105,9 @@ export default function FAQ() {
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
                   className="overflow-hidden"
                 >
-                  <div className="px-6 pb-6">
-                    <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-6 border-r-4 border-pink-400">
-                      <p className="text-gray-700 leading-relaxed text-right">
+                  <div className="px-3 pb-4 sm:px-6 sm:pb-6">
+                    <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-3 sm:p-6 border-r-4 border-pink-400">
+                      <p className="text-gray-700 leading-relaxed text-right text-xs sm:text-base">
                         {faq.answer}
                       </p>
                     </div>
@@ -123,17 +123,17 @@ export default function FAQ() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
-            className="text-center mt-16 p-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-pink-100"
+            className="text-center mt-10 p-4 sm:p-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-pink-100"
           >
-            <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center mx-auto mb-6">
-              <HelpCircle className="w-8 h-8 text-white" />
+            <div className="w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <HelpCircle className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
             </div>
             
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+            <h3 className="text-lg sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-4">
               لديك سؤال آخر؟
             </h3>
             
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-600 mb-4 sm:mb-6 max-w-2xl mx-auto text-xs sm:text-base">
               لا تترددي في التواصل معنا. فريقنا جاهز للإجابة على جميع استفساراتك ومساعدتك في اختيار الأنسب لك.
             </p>
             

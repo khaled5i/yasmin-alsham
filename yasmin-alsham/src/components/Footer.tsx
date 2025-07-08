@@ -61,30 +61,26 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 lg:py-12">
-        {/* قسم معلومات الشركة المبسط */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        {/* معلومات المحل */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-8"
+          className="mb-8 flex flex-col items-center justify-center"
         >
-          <div className="flex items-center justify-center space-x-3 space-x-reverse mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center">
-              <Scissors className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">
-                ياسمين الشام
-              </h3>
-              <p className="text-sm text-gray-400">تفصيل فساتين حسب الطلب</p>
-            </div>
+          <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center mb-2">
+            <Scissors className="w-8 h-8 text-white" />
           </div>
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent text-center">
+            ياسمين الشام
+          </h3>
+          <p className="text-gray-400 text-lg text-center mt-1">تفصيل فساتين حسب الطلب</p>
         </motion.div>
 
-        {/* الأقسام الثلاثة - صف واحد للهاتف المحمول */}
-        <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-8 mb-6 md:mb-8">
+        {/* الأقسام الثلاثة في صف واحد */}
+        <div className="grid grid-cols-3 gap-8 mb-8">
           
           {/* روابط سريعة */}
           <motion.div
@@ -92,10 +88,10 @@ export default function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
-            className="text-center"
+            className="flex flex-col items-center text-center"
           >
-            <h4 className="text-sm md:text-lg font-bold mb-2 md:mb-4 text-pink-400">روابط سريعة</h4>
-            <ul className="space-y-1 md:space-y-3">
+            <h4 className="text-lg font-bold mb-4 text-pink-400">روابط سريعة</h4>
+            <ul className="space-y-3 w-full flex flex-col items-center">
               {quickLinks.map((link, index) => (
                 <motion.li
                   key={link.href}
@@ -103,12 +99,13 @@ export default function Footer() {
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
                   viewport={{ once: true }}
+                  className="w-full flex justify-center"
                 >
                   <Link
                     href={link.href}
-                    className="icon-text-spacing text-gray-300 hover:text-pink-400 transition-colors duration-300 group text-xs md:text-sm"
+                    className="icon-text-spacing text-gray-300 hover:text-pink-400 transition-colors duration-300 group text-sm"
                   >
-                    <link.icon className="w-3 h-3 md:w-4 md:h-4 menu-item-icon group-hover:scale-110 transition-transform duration-300" />
+                    <link.icon className="w-4 h-4 menu-item-icon group-hover:scale-110 transition-transform duration-300" />
                     <span>{link.label}</span>
                   </Link>
                 </motion.li>
@@ -124,23 +121,36 @@ export default function Footer() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h4 className="text-sm md:text-lg font-bold mb-2 md:mb-4 text-pink-400">تواصل معنا</h4>
-            <div className="space-y-1 md:space-y-3">
-              <div className="icon-text-spacing justify-center text-gray-300">
-                <MapPin className="w-3 h-3 md:w-4 md:h-4 text-pink-400 menu-item-icon flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-xs md:text-sm">العنوان</p>
-                  <p className="text-xs md:text-xs text-gray-400 leading-tight">الخبر الشمالية</p>
+            <h4 className="text-lg font-bold mb-4 text-pink-400">تواصل معنا</h4>
+            <div className="space-y-3">
+              {/* العنوان */}
+              <div className="flex flex-col items-center justify-center text-center mx-auto w-fit">
+                <div className="flex items-center justify-center mb-1">
+                  <MapPin className="w-4 h-4 text-pink-400 ml-2" />
+                  <span className="font-medium text-sm">العنوان</span>
                 </div>
+                <p className="text-xs text-gray-400">الخبر الشمالية، التقاطع 6، شارع الأمير مشعل</p>
               </div>
 
-              <div className="icon-text-spacing justify-center text-gray-300">
-                <Phone className="w-3 h-3 md:w-4 md:h-4 text-pink-400 menu-item-icon flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-xs md:text-sm">الهاتف</p>
-                  <a href="tel:+966598862609" className="text-xs md:text-xs text-gray-400 hover:text-pink-400 transition-colors duration-300" dir="ltr">
-                    +966 598 862 609
-                  </a>
+              {/* أرقام الهاتف */}
+              <div className="flex flex-col items-center justify-center text-center mx-auto w-fit">
+                <div className="flex items-center justify-center mb-1">
+                  <Phone className="w-4 h-4 text-pink-400 ml-2" />
+                  <span className="font-medium text-sm">أرقام الهاتف</span>
+                </div>
+                <div className="space-y-1">
+                  <div>
+                    <p className="text-xs text-gray-500">قسم التفصيل</p>
+                    <a href="tel:+966598862609" className="text-xs text-gray-400 hover:text-pink-400 transition-colors duration-300" dir="ltr">
+                      +966 598 862 609
+                    </a>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">قسم الفساتين الجاهزة</p>
+                    <a href="tel:+966501503639" className="text-xs text-gray-400 hover:text-pink-400 transition-colors duration-300" dir="ltr">
+                      +966 501 503 639
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -154,8 +164,8 @@ export default function Footer() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h4 className="text-sm md:text-lg font-bold mb-2 md:mb-4 text-pink-400">ساعات العمل</h4>
-            <div className="space-y-1 md:space-y-3">
+            <h4 className="text-lg font-bold mb-4 text-pink-400">ساعات العمل</h4>
+            <div className="space-y-3">
               {workingHours.map((schedule, index) => (
                 <motion.div
                   key={index}
@@ -165,10 +175,10 @@ export default function Footer() {
                   viewport={{ once: true }}
                   className="icon-text-spacing justify-center text-gray-300"
                 >
-                  <Clock className="w-3 h-3 md:w-4 md:h-4 text-pink-400 menu-item-icon flex-shrink-0" />
+                  <Clock className="w-4 h-4 text-pink-400 menu-item-icon flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-xs md:text-sm leading-tight">{schedule.day}</p>
-                    <p className="text-xs md:text-xs text-gray-400">{schedule.time}</p>
+                    <p className="font-medium text-sm">{schedule.day}</p>
+                    <p className="text-xs text-gray-400">{schedule.time}</p>
                   </div>
                 </motion.div>
               ))}
@@ -183,10 +193,10 @@ export default function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
-          className="text-center mb-4 md:mb-8"
+          className="text-center mb-8"
         >
-          <h4 className="text-sm md:text-lg font-bold mb-2 md:mb-4 text-pink-400">تابعونا على</h4>
-          <div className="flex justify-center space-x-2 md:space-x-4 space-x-reverse">
+          <h4 className="text-lg font-bold mb-4 text-pink-400">تابعونا على</h4>
+          <div className="flex justify-center gap-x-4">
             {socialLinks.map((social, index) => (
               <motion.a
                 key={social.name}
@@ -195,7 +205,7 @@ export default function Footer() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
                 viewport={{ once: true }}
-                className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center text-white hover:from-pink-500 hover:to-rose-500 transition-all duration-300 hover:scale-110 shadow-lg"
+                className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center text-white hover:from-pink-500 hover:to-rose-500 transition-all duration-300 hover:scale-110 shadow-lg"
                 aria-label={social.name}
               >
                 {social.icon}
@@ -205,9 +215,9 @@ export default function Footer() {
         </motion.div>
 
         {/* خط الفصل */}
-        <div className="border-t border-gray-700 pt-3 md:pt-6">
+        <div className="border-t border-gray-700 pt-6">
           <div className="text-center">
-            <p className="text-xs md:text-sm text-gray-400">
+            <p className="text-sm text-gray-400">
               © {currentYear} ياسمين الشام. جميع الحقوق محفوظة.
             </p>
           </div>

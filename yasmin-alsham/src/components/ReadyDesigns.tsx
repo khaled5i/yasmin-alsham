@@ -241,12 +241,6 @@ export default function ReadyDesigns() {
                 {/* المعلومات */}
                 <Link href={`/designs/${design.id}`}>
                   <div className="p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-300">
-                    <div className="mb-3">
-                      <span className="bg-gradient-to-r from-pink-100 to-rose-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">
-                        {design.category}
-                      </span>
-                    </div>
-
                     <h3 className="font-bold text-gray-800 mb-2 group-hover:text-pink-600 transition-colors duration-300">
                       {design.title}
                     </h3>
@@ -271,7 +265,7 @@ export default function ReadyDesigns() {
         >
           <Link
             href="/designs"
-            className="inline-flex items-center space-x-3 space-x-reverse bg-gradient-to-r from-pink-600 to-purple-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            className="btn-primary inline-flex items-center space-x-3 space-x-reverse text-lg font-bold"
           >
             <Eye className="w-6 h-6" />
             <span>عرض جميع التصاميم</span>

@@ -19,23 +19,19 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-16 lg:pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 pt-4 lg:pt-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
         {/* التنقل */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-4 lg:mb-8"
-        >
+        <div className="flex justify-start items-start mt-0 mb-2" dir="rtl">
           <Link
             href="/"
             className="inline-flex items-center space-x-2 space-x-reverse text-pink-600 hover:text-pink-700 transition-colors duration-300"
+            style={{marginTop: 0}}
           >
             <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5" />
             <span className="text-sm lg:text-base">العودة للصفحة الرئيسية</span>
           </Link>
-        </motion.div>
+        </div>
 
         {/* العنوان */}
         <motion.div
@@ -121,10 +117,8 @@ export default function FavoritesPage() {
                     <button
                       onClick={() => handleAddToCart(product)}
                       disabled={addedToCart.includes(product.id)}
-                      className={`flex-1 flex items-center justify-center space-x-2 space-x-reverse py-2 px-4 rounded-lg transition-all duration-300 ${
-                        addedToCart.includes(product.id)
-                          ? 'bg-green-500 text-white'
-                          : 'bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:shadow-lg'
+                      className={`btn-primary flex-1 flex items-center justify-center space-x-2 space-x-reverse py-2 px-4 transition-all duration-300 ${
+                        addedToCart.includes(product.id) ? 'bg-green-500 text-white' : ''
                       }`}
                     >
                       <ShoppingBag className="w-4 h-4" />
