@@ -7,7 +7,7 @@ import { Calendar, Sparkles, Heart, Star } from 'lucide-react'
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-8 sm:pt-16 lg:pt-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-2 sm:pt-4 lg:pt-6">
       {/* خلفية متدرجة */}
       <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50"></div>
       
@@ -65,7 +65,7 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 -mt-16 sm:-mt-24 lg:-mt-32">
         {/* تخطيط للشاشات الصغيرة والمتوسطة */}
         <div className="lg:hidden">
           <div className="text-center space-y-8">
@@ -81,7 +81,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-4xl sm:text-5xl font-bold leading-tight"
+                className="text-3xl sm:text-4xl font-bold leading-tight"
               >
                 <span className="bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 bg-clip-text text-transparent">
                   ياسمين الشام
@@ -93,7 +93,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-xl sm:text-2xl text-gray-700 font-medium"
+                className="text-lg sm:text-xl text-gray-700 font-medium"
               >
                 تفصيل فساتين حسب الطلب بأناقة دمشقية
               </motion.p>
@@ -103,7 +103,7 @@ export default function Hero() {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
               <div className="relative w-full h-80 sm:h-96 md:h-[400px] rounded-2xl overflow-hidden shadow-2xl mx-auto max-w-sm sm:max-w-md">
@@ -140,7 +140,7 @@ export default function Hero() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
               className="space-y-6"
             >
               {/* الوصف */}

@@ -82,7 +82,7 @@ body {
 }
 
 .btn-secondary {
-  @apply bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-800 font-semibold py-2 px-4 rounded-lg border border-purple-200 hover:border-purple-300 transition-all duration-300;
+  @apply bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-800 font-semibold py-2 px-4 rounded-full border border-purple-200 hover:border-purple-300 transition-all duration-300;
 }
 
 /* أنماط البطاقات */

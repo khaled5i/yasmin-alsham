@@ -105,6 +105,7 @@ export default function Header() {
               <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
                 ياسمين الشام
               </h1>
+
               {/* إخفاء العنوان الفرعي في الهاتف المحمول */}
               <p className="hidden lg:block text-xs lg:text-sm text-gray-600 font-medium">
                 تفصيل فساتين حسب الطلب
