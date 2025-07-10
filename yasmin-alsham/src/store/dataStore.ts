@@ -21,6 +21,11 @@ const handleError = (error: any): string => {
   return 'خطأ غير معروف'
 }
 
+// دالة مساعدة لمعالجة الأخطاء في المتجر
+const setError = (set: any, error: any) => {
+  set({ error: handleError(error), isLoading: false })
+}
+
 // تعريف أنواع البيانات (محولة من قاعدة البيانات)
 export interface Appointment {
   id: string
@@ -222,7 +227,6 @@ const mapDBWorkerToLocal = (dbWorker: DBWorker): Worker => ({
 const mapLocalWorkerToDB = (localWorker: Omit<Worker, 'id' | 'createdAt' | 'updatedAt' | 'role'>): Omit<DBWorker, 'id' | 'created_at' | 'updated_at'> => ({
   user_id: '',
   email: localWorker.email,
-  password: localWorker.password,
   full_name: localWorker.full_name,
   phone: localWorker.phone,
   specialty: localWorker.specialty,
@@ -287,7 +291,7 @@ export const useDataStore = create<DataState>()(
           const { appointment, error } = await appointmentService.updateAppointment(id, dbUpdates)
           
           if (error) {
-            set({ error: error, isLoading: false })
+            set({ error: handleError(error), isLoading: false })
             return
           }
 
@@ -315,7 +319,7 @@ export const useDataStore = create<DataState>()(
           const { error } = await appointmentService.deleteAppointment(id)
           
           if (error) {
-            set({ error: error, isLoading: false })
+            setError(set, error)
             return
           }
 
@@ -343,7 +347,7 @@ export const useDataStore = create<DataState>()(
           const { appointments, error } = await appointmentService.getAllAppointments()
           
           if (error) {
-            set({ error: error, isLoading: false })
+            setError(set, error)
             return
           }
 
@@ -364,7 +368,7 @@ export const useDataStore = create<DataState>()(
           const { order, error } = await orderService.createOrder(dbOrder)
           
           if (error) {
-            set({ error: error, isLoading: false })
+            setError(set, error)
             return
           }
 
@@ -405,7 +409,7 @@ export const useDataStore = create<DataState>()(
           const { order, error } = await orderService.updateOrder(id, dbUpdates)
           
           if (error) {
-            set({ error: error, isLoading: false })
+            setError(set, error)
             return
           }
 
@@ -433,7 +437,7 @@ export const useDataStore = create<DataState>()(
           const { error } = await orderService.deleteOrder(id)
           
           if (error) {
-            set({ error: error, isLoading: false })
+            setError(set, error)
             return
           }
 
