@@ -465,7 +465,7 @@ export const useDataStore = create<DataState>()(
           const { orders, error } = await orderService.getAllOrders()
           
           if (error) {
-            set({ error: error, isLoading: false })
+            set({ error: handleError(error), isLoading: false })
             return
           }
 
@@ -488,7 +488,7 @@ export const useDataStore = create<DataState>()(
           })
           
           if (error) {
-            set({ error: error, isLoading: false })
+            set({ error: handleError(error), isLoading: false })
             return
           }
 
@@ -519,7 +519,7 @@ export const useDataStore = create<DataState>()(
           })
           
           if (error) {
-            set({ error: error, isLoading: false })
+            set({ error: handleError(error), isLoading: false })
             return
           }
 
@@ -549,7 +549,7 @@ export const useDataStore = create<DataState>()(
           const { worker, error } = await workerService.createWorker(dbWorker)
           
           if (error) {
-            set({ error: error, isLoading: false })
+            set({ error: handleError(error), isLoading: false })
             return
           }
 
@@ -582,7 +582,7 @@ export const useDataStore = create<DataState>()(
           const { worker, error } = await workerService.updateWorker(id, dbUpdates)
           
           if (error) {
-            set({ error: error, isLoading: false })
+            set({ error: handleError(error), isLoading: false })
             return
           }
 
@@ -610,7 +610,7 @@ export const useDataStore = create<DataState>()(
           const { error } = await workerService.deleteWorker(id)
           
           if (error) {
-            set({ error: error, isLoading: false })
+            set({ error: handleError(error), isLoading: false })
             return
           }
 
@@ -638,7 +638,7 @@ export const useDataStore = create<DataState>()(
           const { workers, error } = await workerService.getAllWorkers()
           
           if (error) {
-            set({ error: error, isLoading: false })
+            set({ error: handleError(error), isLoading: false })
             return
           }
 
