@@ -1,7 +1,27 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { 
+  appointmentService, 
+  orderService, 
+  workerService,
+  type Appointment as DBAppointment,
+  type Order as DBOrder,
+  type Worker as DBWorker
+} from '@/lib/database'
+import { getCurrentUserId } from '@/lib/supabase'
 
-// تعريف أنواع البيانات
+// دالة مساعدة لتحويل الأخطاء
+const handleError = (error: any): string => {
+  if (error?.message) {
+    return error.message
+  }
+  if (typeof error === 'string') {
+    return error
+  }
+  return 'خطأ غير معروف'
+}
+
+// تعريف أنواع البيانات (محولة من قاعدة البيانات)
 export interface Appointment {
   id: string
   clientName: string
@@ -89,30 +109,33 @@ interface DataState {
   error: string | null
 
   // إدارة المواعيد
-  addAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => void
-  updateAppointment: (id: string, updates: Partial<Appointment>) => void
-  deleteAppointment: (id: string) => void
+  addAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  updateAppointment: (id: string, updates: Partial<Appointment>) => Promise<void>
+  deleteAppointment: (id: string) => Promise<void>
   getAppointment: (id: string) => Appointment | undefined
+  loadAppointments: () => Promise<void>
 
   // إدارة الطلبات
-  addOrder: (order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => void
-  updateOrder: (id: string, updates: Partial<Order>) => void
-  deleteOrder: (id: string) => void
+  addOrder: (order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  updateOrder: (id: string, updates: Partial<Order>) => Promise<void>
+  deleteOrder: (id: string) => Promise<void>
   getOrder: (id: string) => Order | undefined
+  loadOrders: () => Promise<void>
 
   // دوال خاصة للعمال
-  startOrderWork: (orderId: string, workerId: string) => void
-  completeOrder: (orderId: string, workerId: string, completedImages?: string[]) => void
+  startOrderWork: (orderId: string, workerId: string) => Promise<void>
+  completeOrder: (orderId: string, workerId: string, completedImages?: string[]) => Promise<void>
 
   // إدارة العمال
-  addWorker: (worker: Omit<Worker, 'id' | 'createdAt' | 'updatedAt' | 'role'>) => void
-  updateWorker: (id: string, updates: Partial<Worker>) => void
-  deleteWorker: (id: string) => void
+  addWorker: (worker: Omit<Worker, 'id' | 'createdAt' | 'updatedAt' | 'role'>) => Promise<void>
+  updateWorker: (id: string, updates: Partial<Worker>) => Promise<void>
+  deleteWorker: (id: string) => Promise<void>
   getWorker: (id: string) => Worker | undefined
+  loadWorkers: () => Promise<void>
 
   // وظائف مساعدة
   clearError: () => void
-  loadData: () => void
+  loadData: () => Promise<void>
   
   // إحصائيات
   getStats: () => {
@@ -126,10 +149,90 @@ interface DataState {
   }
 }
 
-// توليد ID فريد
-const generateId = () => {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2)
-}
+// دالة تحويل من قاعدة البيانات إلى الواجهة المحلية
+const mapDBAppointmentToLocal = (dbAppointment: DBAppointment): Appointment => ({
+  id: dbAppointment.id,
+  clientName: dbAppointment.client_name,
+  clientPhone: dbAppointment.client_phone,
+  appointmentDate: dbAppointment.appointment_date,
+  appointmentTime: dbAppointment.appointment_time,
+  notes: dbAppointment.notes || undefined,
+  status: dbAppointment.status as 'pending' | 'confirmed' | 'completed' | 'cancelled',
+  createdAt: dbAppointment.created_at,
+  updatedAt: dbAppointment.updated_at
+})
+
+const mapLocalAppointmentToDB = (localAppointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Omit<DBAppointment, 'id' | 'created_at' | 'updated_at'> => ({
+  client_name: localAppointment.clientName,
+  client_phone: localAppointment.clientPhone,
+  appointment_date: localAppointment.appointmentDate,
+  appointment_time: localAppointment.appointmentTime,
+  status: localAppointment.status,
+  notes: localAppointment.notes
+})
+
+const mapDBOrderToLocal = (dbOrder: DBOrder): Order => ({
+  id: dbOrder.id,
+  clientName: dbOrder.client_name,
+  clientPhone: dbOrder.client_phone,
+  description: dbOrder.description,
+  fabric: dbOrder.fabric || '',
+  measurements: dbOrder.measurements || {},
+  price: dbOrder.price,
+  status: dbOrder.status as 'pending' | 'in_progress' | 'completed' | 'delivered' | 'cancelled',
+  assignedWorker: dbOrder.assigned_worker_id || undefined,
+  dueDate: dbOrder.due_date,
+  notes: dbOrder.notes || undefined,
+  voiceNotes: dbOrder.voice_notes || undefined,
+  images: dbOrder.images || undefined,
+  completedImages: dbOrder.completed_images || undefined,
+  createdAt: dbOrder.created_at,
+  updatedAt: dbOrder.updated_at
+})
+
+const mapLocalOrderToDB = (localOrder: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Omit<DBOrder, 'id' | 'created_at' | 'updated_at'> => ({
+  client_name: localOrder.clientName,
+  client_phone: localOrder.clientPhone,
+  description: localOrder.description,
+  fabric: localOrder.fabric,
+  measurements: localOrder.measurements,
+  price: localOrder.price,
+  status: localOrder.status,
+  assigned_worker_id: localOrder.assignedWorker,
+  due_date: localOrder.dueDate,
+  notes: localOrder.notes,
+  voice_notes: localOrder.voiceNotes,
+  images: localOrder.images,
+  completed_images: localOrder.completedImages
+})
+
+const mapDBWorkerToLocal = (dbWorker: DBWorker): Worker => ({
+  id: dbWorker.id,
+  email: dbWorker.email,
+  password: '', // لا نعيد كلمة المرور
+  full_name: dbWorker.full_name,
+  phone: dbWorker.phone || '',
+  specialty: dbWorker.specialty || '',
+  role: 'worker' as const,
+  is_active: dbWorker.is_active,
+  createdAt: dbWorker.created_at,
+  updatedAt: dbWorker.updated_at
+})
+
+const mapLocalWorkerToDB = (localWorker: Omit<Worker, 'id' | 'createdAt' | 'updatedAt' | 'role'>): Omit<DBWorker, 'id' | 'created_at' | 'updated_at'> => ({
+  user_id: '',
+  email: localWorker.email,
+  password: localWorker.password,
+  full_name: localWorker.full_name,
+  phone: localWorker.phone,
+  specialty: localWorker.specialty,
+  role: 'worker',
+  is_active: localWorker.is_active,
+  experience_years: undefined,
+  hourly_rate: undefined,
+  performance_rating: undefined,
+  total_completed_orders: undefined
+})
 
 export const useDataStore = create<DataState>()(
   persist(
@@ -142,43 +245,90 @@ export const useDataStore = create<DataState>()(
       error: null,
 
       // إدارة المواعيد
-      addAppointment: (appointmentData) => {
-        const appointment: Appointment = {
-          ...appointmentData,
-          id: generateId(),
-          status: 'pending',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+      addAppointment: async (appointmentData) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const dbAppointment = mapLocalAppointmentToDB(appointmentData)
+          const { appointment, error } = await appointmentService.createAppointment(dbAppointment)
+          
+          if (error) {
+            set({ error: handleError(error), isLoading: false })
+            return
+          }
+
+          if (appointment) {
+            const localAppointment = mapDBAppointmentToLocal(appointment)
+            set((state) => ({
+              appointments: [...state.appointments, localAppointment],
+              error: null,
+              isLoading: false
+            }))
+            console.log('✅ تم إضافة موعد جديد:', localAppointment)
+          }
+        } catch (error) {
+          set({ error: 'خطأ في إضافة الموعد', isLoading: false })
+          console.error('خطأ في إضافة الموعد:', error)
         }
-
-        set((state) => ({
-          appointments: [...state.appointments, appointment],
-          error: null
-        }))
-
-        console.log('✅ تم إضافة موعد جديد:', appointment)
       },
 
-      updateAppointment: (id, updates) => {
-        set((state) => ({
-          appointments: state.appointments.map(appointment =>
-            appointment.id === id
-              ? { ...appointment, ...updates, updatedAt: new Date().toISOString() }
-              : appointment
-          ),
-          error: null
-        }))
+      updateAppointment: async (id, updates) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const dbUpdates: Partial<DBAppointment> = {}
+          if (updates.clientName) dbUpdates.client_name = updates.clientName
+          if (updates.clientPhone) dbUpdates.client_phone = updates.clientPhone
+          if (updates.appointmentDate) dbUpdates.appointment_date = updates.appointmentDate
+          if (updates.appointmentTime) dbUpdates.appointment_time = updates.appointmentTime
+          if (updates.status) dbUpdates.status = updates.status
+          if (updates.notes !== undefined) dbUpdates.notes = updates.notes
 
-        console.log('✅ تم تحديث الموعد:', id)
+          const { appointment, error } = await appointmentService.updateAppointment(id, dbUpdates)
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
+
+          if (appointment) {
+            const localAppointment = mapDBAppointmentToLocal(appointment)
+            set((state) => ({
+              appointments: state.appointments.map(apt =>
+                apt.id === id ? localAppointment : apt
+              ),
+              error: null,
+              isLoading: false
+            }))
+            console.log('✅ تم تحديث الموعد:', id)
+          }
+        } catch (error) {
+          set({ error: 'خطأ في تحديث الموعد', isLoading: false })
+          console.error('خطأ في تحديث الموعد:', error)
+        }
       },
 
-      deleteAppointment: (id) => {
-        set((state) => ({
-          appointments: state.appointments.filter(appointment => appointment.id !== id),
-          error: null
-        }))
+      deleteAppointment: async (id) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const { error } = await appointmentService.deleteAppointment(id)
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
 
-        console.log('✅ تم حذف الموعد:', id)
+          set((state) => ({
+            appointments: state.appointments.filter(appointment => appointment.id !== id),
+            error: null,
+            isLoading: false
+          }))
+          console.log('✅ تم حذف الموعد:', id)
+        } catch (error) {
+          set({ error: 'خطأ في حذف الموعد', isLoading: false })
+          console.error('خطأ في حذف الموعد:', error)
+        }
       },
 
       getAppointment: (id) => {
@@ -186,44 +336,117 @@ export const useDataStore = create<DataState>()(
         return state.appointments.find(appointment => appointment.id === id)
       },
 
-      // إدارة الطلبات
-      addOrder: (orderData) => {
-        const order: Order = {
-          ...orderData,
-          id: generateId(),
-          status: 'pending',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+      loadAppointments: async () => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const { appointments, error } = await appointmentService.getAllAppointments()
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
+
+          const localAppointments = appointments?.map(mapDBAppointmentToLocal) || []
+          set({ appointments: localAppointments, error: null, isLoading: false })
+        } catch (error) {
+          set({ error: 'خطأ في تحميل المواعيد', isLoading: false })
+          console.error('خطأ في تحميل المواعيد:', error)
         }
-
-        set((state) => ({
-          orders: [...state.orders, order],
-          error: null
-        }))
-
-        console.log('✅ تم إضافة طلب جديد:', order)
       },
 
-      updateOrder: (id, updates) => {
-        set((state) => ({
-          orders: state.orders.map(order =>
-            order.id === id
-              ? { ...order, ...updates, updatedAt: new Date().toISOString() }
-              : order
-          ),
-          error: null
-        }))
+      // إدارة الطلبات
+      addOrder: async (orderData) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const dbOrder = mapLocalOrderToDB(orderData)
+          const { order, error } = await orderService.createOrder(dbOrder)
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
 
-        console.log('✅ تم تحديث الطلب:', id)
+          if (order) {
+            const localOrder = mapDBOrderToLocal(order)
+            set((state) => ({
+              orders: [...state.orders, localOrder],
+              error: null,
+              isLoading: false
+            }))
+            console.log('✅ تم إضافة طلب جديد:', localOrder)
+          }
+        } catch (error) {
+          set({ error: 'خطأ في إضافة الطلب', isLoading: false })
+          console.error('خطأ في إضافة الطلب:', error)
+        }
       },
 
-      deleteOrder: (id) => {
-        set((state) => ({
-          orders: state.orders.filter(order => order.id !== id),
-          error: null
-        }))
+      updateOrder: async (id, updates) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const dbUpdates: Partial<DBOrder> = {}
+          if (updates.clientName) dbUpdates.client_name = updates.clientName
+          if (updates.clientPhone) dbUpdates.client_phone = updates.clientPhone
+          if (updates.description) dbUpdates.description = updates.description
+          if (updates.fabric) dbUpdates.fabric = updates.fabric
+          if (updates.measurements) dbUpdates.measurements = updates.measurements
+          if (updates.price) dbUpdates.price = updates.price
+          if (updates.status) dbUpdates.status = updates.status
+          if (updates.assignedWorker) dbUpdates.assigned_worker_id = updates.assignedWorker
+          if (updates.dueDate) dbUpdates.due_date = updates.dueDate
+          if (updates.notes !== undefined) dbUpdates.notes = updates.notes
+          if (updates.voiceNotes) dbUpdates.voice_notes = updates.voiceNotes
+          if (updates.images) dbUpdates.images = updates.images
+          if (updates.completedImages) dbUpdates.completed_images = updates.completedImages
 
-        console.log('✅ تم حذف الطلب:', id)
+          const { order, error } = await orderService.updateOrder(id, dbUpdates)
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
+
+          if (order) {
+            const localOrder = mapDBOrderToLocal(order)
+            set((state) => ({
+              orders: state.orders.map(ord =>
+                ord.id === id ? localOrder : ord
+              ),
+              error: null,
+              isLoading: false
+            }))
+            console.log('✅ تم تحديث الطلب:', id)
+          }
+        } catch (error) {
+          set({ error: 'خطأ في تحديث الطلب', isLoading: false })
+          console.error('خطأ في تحديث الطلب:', error)
+        }
+      },
+
+      deleteOrder: async (id) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const { error } = await orderService.deleteOrder(id)
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
+
+          set((state) => ({
+            orders: state.orders.filter(order => order.id !== id),
+            error: null,
+            isLoading: false
+          }))
+          console.log('✅ تم حذف الطلب:', id)
+        } catch (error) {
+          set({ error: 'خطأ في حذف الطلب', isLoading: false })
+          console.error('خطأ في حذف الطلب:', error)
+        }
       },
 
       getOrder: (id) => {
@@ -231,80 +454,172 @@ export const useDataStore = create<DataState>()(
         return state.orders.find(order => order.id === id)
       },
 
-      // إدارة العمال
-      addWorker: (workerData) => {
-        const worker: Worker = {
-          ...workerData,
-          id: generateId(),
-          role: 'worker',
-          is_active: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-
-        set((state) => ({
-          workers: [...state.workers, worker],
-          error: null
-        }))
-
-        // إضافة العامل إلى نظام المصادقة
-        if (typeof window !== 'undefined') {
-          const users = JSON.parse(localStorage.getItem('yasmin-users') || '[]')
-          users.push({
-            id: worker.id,
-            email: worker.email,
-            password: worker.password,
-            full_name: worker.full_name,
-            role: 'worker',
-            is_active: true
-          })
-          localStorage.setItem('yasmin-users', JSON.stringify(users))
-        }
-
-        console.log('✅ تم إضافة عامل جديد:', worker)
-      },
-
-      updateWorker: (id, updates) => {
-        set((state) => ({
-          workers: state.workers.map(worker =>
-            worker.id === id
-              ? { ...worker, ...updates, updatedAt: new Date().toISOString() }
-              : worker
-          ),
-          error: null
-        }))
-
-        // تحديث بيانات المصادقة إذا تم تغيير البريد أو كلمة المرور
-        if (updates.email || updates.password || updates.full_name) {
-          if (typeof window !== 'undefined') {
-            const users = JSON.parse(localStorage.getItem('yasmin-users') || '[]')
-            const userIndex = users.findIndex((user: any) => user.id === id)
-            if (userIndex !== -1) {
-              if (updates.email) users[userIndex].email = updates.email
-              if (updates.password) users[userIndex].password = updates.password
-              if (updates.full_name) users[userIndex].full_name = updates.full_name
-              localStorage.setItem('yasmin-users', JSON.stringify(users))
-            }
+      loadOrders: async () => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const { orders, error } = await orderService.getAllOrders()
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
           }
-        }
 
-        console.log('✅ تم تحديث العامل:', id)
+          const localOrders = orders?.map(mapDBOrderToLocal) || []
+          set({ orders: localOrders, error: null, isLoading: false })
+        } catch (error) {
+          set({ error: 'خطأ في تحميل الطلبات', isLoading: false })
+          console.error('خطأ في تحميل الطلبات:', error)
+        }
       },
 
-      deleteWorker: (id) => {
-        set((state) => ({
-          workers: state.workers.filter(worker => worker.id !== id),
-          error: null
-        }))
+      // دوال خاصة للعمال
+      startOrderWork: async (orderId, workerId) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const { order, error } = await orderService.updateOrder(orderId, {
+            status: 'in_progress',
+            assigned_worker_id: workerId
+          })
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
 
-        // حذف من نظام المصادقة
-        if (typeof window !== 'undefined') {
-          const users = JSON.parse(localStorage.getItem('yasmin-users') || '[]')
-          const filteredUsers = users.filter((user: any) => user.id !== id)
-          localStorage.setItem('yasmin-users', JSON.stringify(filteredUsers))
+          if (order) {
+            const localOrder = mapDBOrderToLocal(order)
+            set((state) => ({
+              orders: state.orders.map(ord =>
+                ord.id === orderId ? localOrder : ord
+              ),
+              error: null,
+              isLoading: false
+            }))
+            console.log('✅ تم بدء العمل على الطلب:', orderId)
+          }
+        } catch (error) {
+          set({ error: 'خطأ في بدء العمل على الطلب', isLoading: false })
+          console.error('خطأ في بدء العمل على الطلب:', error)
         }
+      },
 
-        console.log('✅ تم حذف العامل:', id)
+      completeOrder: async (orderId, workerId, completedImages) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const { order, error } = await orderService.updateOrder(orderId, {
+            status: 'completed',
+            completed_images: completedImages
+          })
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
+
+          if (order) {
+            const localOrder = mapDBOrderToLocal(order)
+            set((state) => ({
+              orders: state.orders.map(ord =>
+                ord.id === orderId ? localOrder : ord
+              ),
+              error: null,
+              isLoading: false
+            }))
+            console.log('✅ تم إكمال الطلب:', orderId)
+          }
+        } catch (error) {
+          set({ error: 'خطأ في إكمال الطلب', isLoading: false })
+          console.error('خطأ في إكمال الطلب:', error)
+        }
+      },
+
+      // إدارة العمال
+      addWorker: async (workerData) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const dbWorker = mapLocalWorkerToDB(workerData)
+          const { worker, error } = await workerService.createWorker(dbWorker)
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
+
+          if (worker) {
+            const localWorker = mapDBWorkerToLocal(worker)
+            set((state) => ({
+              workers: [...state.workers, localWorker],
+              error: null,
+              isLoading: false
+            }))
+            console.log('✅ تم إضافة عامل جديد:', localWorker)
+          }
+        } catch (error) {
+          set({ error: 'خطأ في إضافة العامل', isLoading: false })
+          console.error('خطأ في إضافة العامل:', error)
+        }
+      },
+
+      updateWorker: async (id, updates) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const dbUpdates: Partial<DBWorker> = {}
+          if (updates.email) dbUpdates.email = updates.email
+          if (updates.full_name) dbUpdates.full_name = updates.full_name
+          if (updates.phone) dbUpdates.phone = updates.phone
+          if (updates.specialty) dbUpdates.specialty = updates.specialty
+          if (updates.is_active !== undefined) dbUpdates.is_active = updates.is_active
+
+          const { worker, error } = await workerService.updateWorker(id, dbUpdates)
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
+
+          if (worker) {
+            const localWorker = mapDBWorkerToLocal(worker)
+            set((state) => ({
+              workers: state.workers.map(wrk =>
+                wrk.id === id ? localWorker : wrk
+              ),
+              error: null,
+              isLoading: false
+            }))
+            console.log('✅ تم تحديث العامل:', id)
+          }
+        } catch (error) {
+          set({ error: 'خطأ في تحديث العامل', isLoading: false })
+          console.error('خطأ في تحديث العامل:', error)
+        }
+      },
+
+      deleteWorker: async (id) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const { error } = await workerService.deleteWorker(id)
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
+
+          set((state) => ({
+            workers: state.workers.filter(worker => worker.id !== id),
+            error: null,
+            isLoading: false
+          }))
+          console.log('✅ تم حذف العامل:', id)
+        } catch (error) {
+          set({ error: 'خطأ في حذف العامل', isLoading: false })
+          console.error('خطأ في حذف العامل:', error)
+        }
       },
 
       getWorker: (id) => {
@@ -312,36 +627,23 @@ export const useDataStore = create<DataState>()(
         return state.workers.find(worker => worker.id === id)
       },
 
-      // دوال خاصة للعمال
-      startOrderWork: (orderId, workerId) => {
-        set((state) => ({
-          orders: state.orders.map(order =>
-            order.id === orderId && order.assignedWorker === workerId
-              ? { ...order, status: 'in_progress', updatedAt: new Date().toISOString() }
-              : order
-          ),
-          error: null
-        }))
+      loadWorkers: async () => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const { workers, error } = await workerService.getAllWorkers()
+          
+          if (error) {
+            set({ error: error, isLoading: false })
+            return
+          }
 
-        console.log('✅ تم بدء العمل في الطلب:', orderId)
-      },
-
-      completeOrder: (orderId, workerId, completedImages = []) => {
-        set((state) => ({
-          orders: state.orders.map(order =>
-            order.id === orderId && order.assignedWorker === workerId
-              ? {
-                  ...order,
-                  status: 'completed',
-                  completedImages: completedImages.length > 0 ? completedImages : undefined,
-                  updatedAt: new Date().toISOString()
-                }
-              : order
-          ),
-          error: null
-        }))
-
-        console.log('✅ تم إنهاء الطلب:', orderId)
+          const localWorkers = workers?.map(mapDBWorkerToLocal) || []
+          set({ workers: localWorkers, error: null, isLoading: false })
+        } catch (error) {
+          set({ error: 'خطأ في تحميل العمال', isLoading: false })
+          console.error('خطأ في تحميل العمال:', error)
+        }
       },
 
       // وظائف مساعدة
@@ -349,30 +651,49 @@ export const useDataStore = create<DataState>()(
         set({ error: null })
       },
 
-      loadData: () => {
-        set({ isLoading: true })
-        // البيانات محفوظة تلقائياً بواسطة persist middleware
-        set({ isLoading: false })
+      loadData: async () => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          await Promise.all([
+            get().loadAppointments(),
+            get().loadOrders(),
+            get().loadWorkers()
+          ])
+          
+          set({ isLoading: false })
+        } catch (error) {
+          set({ error: 'خطأ في تحميل البيانات', isLoading: false })
+          console.error('خطأ في تحميل البيانات:', error)
+        }
       },
-
+      
       // إحصائيات
       getStats: () => {
         const state = get()
+        const totalAppointments = state.appointments.length
+        const totalOrders = state.orders.length
+        const totalWorkers = state.workers.length
+        const pendingAppointments = state.appointments.filter(apt => apt.status === 'pending').length
+        const activeOrders = state.orders.filter(order => order.status === 'in_progress').length
+        const completedOrders = state.orders.filter(order => order.status === 'completed').length
+        const totalRevenue = state.orders
+          .filter(order => order.status === 'completed' || order.status === 'delivered')
+          .reduce((sum, order) => sum + order.price, 0)
+
         return {
-          totalAppointments: state.appointments.length,
-          totalOrders: state.orders.length,
-          totalWorkers: state.workers.length,
-          pendingAppointments: state.appointments.filter(a => a.status === 'pending').length,
-          activeOrders: state.orders.filter(o => ['pending', 'in_progress'].includes(o.status)).length,
-          completedOrders: state.orders.filter(o => o.status === 'completed').length,
-          totalRevenue: state.orders
-            .filter(o => o.status === 'completed')
-            .reduce((sum, order) => sum + order.price, 0)
+          totalAppointments,
+          totalOrders,
+          totalWorkers,
+          pendingAppointments,
+          activeOrders,
+          completedOrders,
+          totalRevenue
         }
       }
     }),
     {
-      name: 'yasmin-data-storage',
+      name: 'yasmin-alsham-data',
       partialize: (state) => ({
         appointments: state.appointments,
         orders: state.orders,

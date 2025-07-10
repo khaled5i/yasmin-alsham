@@ -2,6 +2,13 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { 
+  favoriteService, 
+  cartService, 
+  productService,
+  type Product as DBProduct
+} from '@/lib/database'
+import { getCurrentUserId } from '@/lib/supabase'
 
 // تعريف نوع المنتج
 export interface Product {
@@ -26,25 +33,39 @@ export interface CartItem extends Product {
 interface ShopState {
   // المفضلة
   favorites: Product[]
-  addToFavorites: (product: Product) => void
-  removeFromFavorites: (productId: string) => void
+  addToFavorites: (product: Product) => Promise<void>
+  removeFromFavorites: (productId: string) => Promise<void>
   isFavorite: (productId: string) => boolean
-  clearFavorites: () => void
+  clearFavorites: () => Promise<void>
+  loadFavorites: () => Promise<void>
 
   // السلة
   cart: CartItem[]
-  addToCart: (product: Product, quantity?: number, size?: string, color?: string) => void
-  removeFromCart: (productId: string) => void
+  addToCart: (product: Product, quantity?: number, size?: string, color?: string) => Promise<void>
+  removeFromCart: (productId: string) => Promise<void>
   isInCart: (productId: string) => boolean
-  updateCartItemQuantity: (productId: string, quantity: number) => void
-  clearCart: () => void
+  updateCartItemQuantity: (productId: string, quantity: number) => Promise<void>
+  clearCart: () => Promise<void>
   getCartTotal: () => number
   getCartItemsCount: () => number
+  loadCart: () => Promise<void>
 
   // حالة التحميل
   isLoading: boolean
   setLoading: (loading: boolean) => void
 }
+
+// دالة تحويل من قاعدة البيانات إلى الواجهة المحلية
+const mapDBProductToLocal = (dbProduct: DBProduct): Product => ({
+  id: dbProduct.id,
+  name: dbProduct.name,
+  price: dbProduct.price,
+  image: dbProduct.image || '',
+  description: dbProduct.description,
+  category: dbProduct.category,
+  sizes: dbProduct.sizes || [],
+  colors: dbProduct.colors || []
+})
 
 // إنشاء المتجر
 export const useShopStore = create<ShopState>()(
@@ -53,16 +74,60 @@ export const useShopStore = create<ShopState>()(
       // المفضلة
       favorites: [],
       
-      addToFavorites: (product: Product) => {
-        const { favorites } = get()
-        if (!favorites.find(item => item.id === product.id)) {
-          set({ favorites: [...favorites, product] })
+      addToFavorites: async (product: Product) => {
+        set({ isLoading: true })
+        
+        try {
+          const userId = await getCurrentUserId()
+          if (!userId) {
+            console.error('لا يوجد مستخدم مسجل دخول')
+            set({ isLoading: false })
+            return
+          }
+          
+          const { error } = await favoriteService.addToFavorites(userId, product.id)
+          
+          if (error) {
+            console.error('خطأ في إضافة المنتج للمفضلة:', error)
+            set({ isLoading: false })
+            return
+          }
+
+          const { favorites } = get()
+          if (!favorites.find(item => item.id === product.id)) {
+            set({ favorites: [...favorites, product], isLoading: false })
+          }
+        } catch (error) {
+          console.error('خطأ في إضافة المنتج للمفضلة:', error)
+          set({ isLoading: false })
         }
       },
 
-      removeFromFavorites: (productId: string) => {
-        const { favorites } = get()
-        set({ favorites: favorites.filter(item => item.id !== productId) })
+      removeFromFavorites: async (productId: string) => {
+        set({ isLoading: true })
+        
+        try {
+          const userId = await getCurrentUserId()
+          if (!userId) {
+            console.error('لا يوجد مستخدم مسجل دخول')
+            set({ isLoading: false })
+            return
+          }
+          
+          const { error } = await favoriteService.removeFromFavorites(userId, productId)
+          
+          if (error) {
+            console.error('خطأ في إزالة المنتج من المفضلة:', error)
+            set({ isLoading: false })
+            return
+          }
+
+          const { favorites } = get()
+          set({ favorites: favorites.filter(item => item.id !== productId), isLoading: false })
+        } catch (error) {
+          console.error('خطأ في إزالة المنتج من المفضلة:', error)
+          set({ isLoading: false })
+        }
       },
 
       isFavorite: (productId: string) => {
@@ -70,47 +135,129 @@ export const useShopStore = create<ShopState>()(
         return favorites.some(item => item.id === productId)
       },
 
-      clearFavorites: () => {
-        set({ favorites: [] })
+      clearFavorites: async () => {
+        set({ isLoading: true })
+        
+        try {
+          // هنا نحتاج إلى حذف جميع المفضلة من قاعدة البيانات
+          // للتطوير، سنقوم فقط بمسح المفضلة المحلية
+          set({ favorites: [], isLoading: false })
+        } catch (error) {
+          console.error('خطأ في مسح المفضلة:', error)
+          set({ isLoading: false })
+        }
+      },
+
+      loadFavorites: async () => {
+        set({ isLoading: true })
+        
+        try {
+          const userId = await getCurrentUserId()
+          if (!userId) {
+            console.error('لا يوجد مستخدم مسجل دخول')
+            set({ isLoading: false })
+            return
+          }
+          
+          const { favorites, error } = await favoriteService.getUserFavorites(userId)
+          
+          if (error) {
+            console.error('خطأ في تحميل المفضلة:', error)
+            set({ isLoading: false })
+            return
+          }
+
+          // تحويل البيانات من قاعدة البيانات
+          const localFavorites = favorites?.map(fav => mapDBProductToLocal(fav.products)) || []
+          set({ favorites: localFavorites, isLoading: false })
+        } catch (error) {
+          console.error('خطأ في تحميل المفضلة:', error)
+          set({ isLoading: false })
+        }
       },
 
       // السلة
       cart: [],
 
-      addToCart: (product: Product, quantity = 1, size?: string, color?: string) => {
-        const { cart } = get()
-        const existingItem = cart.find(item => 
-          item.id === product.id && 
-          item.selectedSize === size && 
-          item.selectedColor === color
-        )
-
-        if (existingItem) {
-          // إذا كان المنتج موجود، زيادة الكمية
-          set({
-            cart: cart.map(item =>
-              item.id === product.id && 
-              item.selectedSize === size && 
-              item.selectedColor === color
-                ? { ...item, quantity: item.quantity + quantity }
-                : item
-            )
-          })
-        } else {
-          // إضافة منتج جديد
-          const newItem: CartItem = {
-            ...product,
-            quantity,
-            selectedSize: size,
-            selectedColor: color
+      addToCart: async (product: Product, quantity = 1, size?: string, color?: string) => {
+        set({ isLoading: true })
+        
+        try {
+          const userId = await getCurrentUserId()
+          if (!userId) {
+            console.error('لا يوجد مستخدم مسجل دخول')
+            set({ isLoading: false })
+            return
           }
-          set({ cart: [...cart, newItem] })
+          
+          const { error } = await cartService.addToCart(userId, product.id, quantity, size, color)
+          
+          if (error) {
+            console.error('خطأ في إضافة المنتج للسلة:', error)
+            set({ isLoading: false })
+            return
+          }
+
+          const { cart } = get()
+          const existingItem = cart.find(item => 
+            item.id === product.id && 
+            item.selectedSize === size && 
+            item.selectedColor === color
+          )
+
+          if (existingItem) {
+            // إذا كان المنتج موجود، زيادة الكمية
+            set({
+              cart: cart.map(item =>
+                item.id === product.id && 
+                item.selectedSize === size && 
+                item.selectedColor === color
+                  ? { ...item, quantity: item.quantity + quantity }
+                  : item
+              ),
+              isLoading: false
+            })
+          } else {
+            // إضافة منتج جديد
+            const newItem: CartItem = {
+              ...product,
+              quantity,
+              selectedSize: size,
+              selectedColor: color
+            }
+            set({ cart: [...cart, newItem], isLoading: false })
+          }
+        } catch (error) {
+          console.error('خطأ في إضافة المنتج للسلة:', error)
+          set({ isLoading: false })
         }
       },
 
-      removeFromCart: (productId: string) => {
-        const { cart } = get()
-        set({ cart: cart.filter(item => item.id !== productId) })
+      removeFromCart: async (productId: string) => {
+        set({ isLoading: true })
+        
+        try {
+          const userId = await getCurrentUserId()
+          if (!userId) {
+            console.error('لا يوجد مستخدم مسجل دخول')
+            set({ isLoading: false })
+            return
+          }
+          
+          const { error } = await cartService.removeFromCart(userId, productId)
+          
+          if (error) {
+            console.error('خطأ في إزالة المنتج من السلة:', error)
+            set({ isLoading: false })
+            return
+          }
+
+          const { cart } = get()
+          set({ cart: cart.filter(item => item.id !== productId), isLoading: false })
+        } catch (error) {
+          console.error('خطأ في إزالة المنتج من السلة:', error)
+          set({ isLoading: false })
+        }
       },
 
       isInCart: (productId: string) => {
@@ -118,21 +265,66 @@ export const useShopStore = create<ShopState>()(
         return cart.some(item => item.id === productId)
       },
 
-      updateCartItemQuantity: (productId: string, quantity: number) => {
-        const { cart } = get()
-        if (quantity <= 0) {
-          set({ cart: cart.filter(item => item.id !== productId) })
-        } else {
-          set({
-            cart: cart.map(item =>
-              item.id === productId ? { ...item, quantity } : item
-            )
-          })
+      updateCartItemQuantity: async (productId: string, quantity: number) => {
+        set({ isLoading: true })
+        
+        try {
+          const userId = await getCurrentUserId()
+          if (!userId) {
+            console.error('لا يوجد مستخدم مسجل دخول')
+            set({ isLoading: false })
+            return
+          }
+          
+          const { error } = await cartService.updateCartItemQuantity(userId, productId, quantity)
+          
+          if (error) {
+            console.error('خطأ في تحديث كمية المنتج:', error)
+            set({ isLoading: false })
+            return
+          }
+
+          const { cart } = get()
+          if (quantity <= 0) {
+            set({ cart: cart.filter(item => item.id !== productId), isLoading: false })
+          } else {
+            set({
+              cart: cart.map(item =>
+                item.id === productId ? { ...item, quantity } : item
+              ),
+              isLoading: false
+            })
+          }
+        } catch (error) {
+          console.error('خطأ في تحديث كمية المنتج:', error)
+          set({ isLoading: false })
         }
       },
 
-      clearCart: () => {
-        set({ cart: [] })
+      clearCart: async () => {
+        set({ isLoading: true })
+        
+        try {
+          const userId = await getCurrentUserId()
+          if (!userId) {
+            console.error('لا يوجد مستخدم مسجل دخول')
+            set({ isLoading: false })
+            return
+          }
+          
+          const { error } = await cartService.clearUserCart(userId)
+          
+          if (error) {
+            console.error('خطأ في مسح السلة:', error)
+            set({ isLoading: false })
+            return
+          }
+
+          set({ cart: [], isLoading: false })
+        } catch (error) {
+          console.error('خطأ في مسح السلة:', error)
+          set({ isLoading: false })
+        }
       },
 
       getCartTotal: () => {
@@ -143,6 +335,40 @@ export const useShopStore = create<ShopState>()(
       getCartItemsCount: () => {
         const { cart } = get()
         return cart.reduce((total, item) => total + item.quantity, 0)
+      },
+
+      loadCart: async () => {
+        set({ isLoading: true })
+        
+        try {
+          const userId = await getCurrentUserId()
+          if (!userId) {
+            console.error('لا يوجد مستخدم مسجل دخول')
+            set({ isLoading: false })
+            return
+          }
+          
+          const { cartItems, error } = await cartService.getUserCart(userId)
+          
+          if (error) {
+            console.error('خطأ في تحميل السلة:', error)
+            set({ isLoading: false })
+            return
+          }
+
+          // تحويل البيانات من قاعدة البيانات
+          const localCartItems: CartItem[] = cartItems?.map(item => ({
+            ...mapDBProductToLocal(item.products),
+            quantity: item.quantity,
+            selectedSize: item.selected_size || undefined,
+            selectedColor: item.selected_color || undefined
+          })) || []
+
+          set({ cart: localCartItems, isLoading: false })
+        } catch (error) {
+          console.error('خطأ في تحميل السلة:', error)
+          set({ isLoading: false })
+        }
       },
 
       // حالة التحميل
