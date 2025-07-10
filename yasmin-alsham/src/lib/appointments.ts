@@ -1,4 +1,5 @@
-import { supabase, Appointment } from './supabase'
+import { supabase } from './supabase'
+import { Appointment } from './database'
 
 export interface AppointmentSlot {
   date: string
@@ -129,9 +130,8 @@ export class AppointmentService {
         client_phone: appointmentData.client_phone,
         appointment_date: appointmentData.appointment_date,
         appointment_time: appointmentData.appointment_time,
-        status: 'scheduled',
+        status: 'pending',
         notes: appointmentData.notes,
-        reminder_sent: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
@@ -184,7 +184,7 @@ export class AppointmentService {
   // تحديث حالة الموعد
   static async updateAppointmentStatus(
     appointmentId: string, 
-    status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled'
+    status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
   ): Promise<{ success: boolean, error: string | null }> {
     try {
       // محاكاة التحديث للتطوير
