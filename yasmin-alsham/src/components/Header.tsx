@@ -184,7 +184,7 @@ export default function Header() {
           className="lg:hidden overflow-hidden bg-white border-t border-pink-100"
         >
           <nav className="py-4 space-y-2">
-            {menuItems.map((item, index) => (
+            {menuItems.filter(item => item.label !== 'الرئيسية').map((item, index) => (
               <motion.div
                 key={item.href}
                 initial={{ opacity: 0, x: -20 }}
@@ -199,7 +199,7 @@ export default function Header() {
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center space-x-3 space-x-reverse px-4 py-3 text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all duration-300 font-medium"
                 >
-                  {item.icon && <item.icon className="w-5 h-5" />}
+                  {item.icon && <item.icon className="w-5 h-5 ml-3" />}
                   <span>{item.label}</span>
                 </Link>
               </motion.div>

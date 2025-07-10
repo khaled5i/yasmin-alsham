@@ -20,7 +20,8 @@ import {
   CheckCircle,
   Plus,
   ArrowRight,
-  Languages
+  Languages,
+  Palette
 } from 'lucide-react'
 
 function DashboardContent() {
@@ -564,6 +565,21 @@ function DashboardContent() {
                   <Plus className="w-6 h-6 text-pink-600 mx-auto mb-2" />
                   <span className="text-sm font-medium text-pink-800">{t('add_new_order')}</span>
                 </Link>
+                <Link
+                  href="/dashboard/add-dress"
+                  className="p-4 bg-gradient-to-r from-pink-50 to-pink-100 rounded-lg border border-pink-200 hover:shadow-md transition-all duration-300 text-center block"
+                >
+                  <Palette className="w-6 h-6 text-pink-600 mx-auto mb-2" />
+                  <span className="text-sm font-medium text-pink-800">إضافة فستان جديد</span>
+                </Link>
+
+                <Link
+                  href="/dashboard/ready-designs"
+                  className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200 hover:shadow-md transition-all duration-300 text-center block"
+                >
+                  <Palette className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                  <span className="text-sm font-medium text-purple-800">إدارة التصاميم الجاهزة</span>
+                </Link>
 
                 <Link
                   href="/dashboard/workers"
@@ -692,6 +708,21 @@ function DashboardContent() {
                   <Plus className="w-6 h-6 text-pink-600 mx-auto mb-2" />
                   <span className="text-sm font-medium text-pink-800">{t('add_new_order')}</span>
                 </Link>
+                <Link
+                  href="/dashboard/add-dress"
+                  className="p-4 bg-gradient-to-r from-pink-50 to-pink-100 rounded-lg border border-pink-200 hover:shadow-md transition-all duration-300 text-center block"
+                >
+                  <Palette className="w-6 h-6 text-pink-600 mx-auto mb-2" />
+                  <span className="text-sm font-medium text-pink-800">إضافة فستان جديد</span>
+                </Link>
+
+                <Link
+                  href="/dashboard/ready-designs"
+                  className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200 hover:shadow-md transition-all duration-300 text-center block"
+                >
+                  <Palette className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                  <span className="text-sm font-medium text-purple-800">إدارة التصاميم الجاهزة</span>
+                </Link>
 
                 <Link
                   href="/dashboard/workers"
@@ -715,6 +746,13 @@ function DashboardContent() {
                 >
                   <Calendar className="w-6 h-6 text-purple-600 mx-auto mb-2" />
                   <span className="text-sm font-medium text-purple-800">{t('appointments')}</span>
+                </Link>
+                <Link
+                  href="/dashboard/ready-designs"
+                  className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200 hover:shadow-md transition-all duration-300 text-center block"
+                >
+                  <Palette className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                  <span className="text-sm font-medium text-purple-800">إدارة التصاميم الجاهزة</span>
                 </Link>
               </div>
 

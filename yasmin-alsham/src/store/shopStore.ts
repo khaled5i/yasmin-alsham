@@ -163,7 +163,7 @@ export const useShopStore = create<ShopState>()(
 
 // دالة مساعدة لتنسيق السعر
 export const formatPrice = (price: number): string => {
-  return `${price.toLocaleString('ar-SA')} ريال`
+  return `${price.toLocaleString('en')} ريال`
 }
 
 // دالة مساعدة لإنشاء رسالة واتساب للسلة

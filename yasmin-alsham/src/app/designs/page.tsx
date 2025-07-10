@@ -97,6 +97,24 @@ export default function DesignsPage() {
     setAddedToCart(savedAddedToCart)
   }, [])
 
+  // تحديث currentImageIndexes ليشمل كل الفساتين
+  useEffect(() => {
+    const indexes: {[key: number]: number} = {}
+    allDesigns.forEach(d => {
+      indexes[d.id] = 0
+    })
+    setCurrentImageIndexes(indexes)
+  }, [allDesigns.length])
+
+  // لإجبار إعادة التصيير عند التعديل على allDesigns (حل مؤقت)
+  const [, setDesignsVersion] = useState(0)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDesignsVersion(v => v + 1)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
 
 
 
@@ -219,8 +237,12 @@ export default function DesignsPage() {
                   >
                     {/* الصورة الحالية */}
                     <img
-                      src={design.images[currentImageIndexes[design.id]]}
-                      alt={`${design.title} - صورة ${currentImageIndexes[design.id] + 1}`}
+                      src={
+                        design.images && design.images.length > 0
+                          ? design.images[currentImageIndexes[design.id]]
+                          : '/wedding-dress-1.jpg.jpg'
+                      }
+                      alt={`${design.title} - صورة ${currentImageIndexes[design.id] ? currentImageIndexes[design.id] + 1 : 1}`}
                       className="w-full h-full object-cover transition-opacity duration-300"
                     />
 

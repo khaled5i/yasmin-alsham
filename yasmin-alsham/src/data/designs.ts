@@ -368,3 +368,7 @@ export const allDesigns: Design[] = [
     reviews_count: 76
   }
 ]
+
+export function addDesign(design: Design) {
+  allDesigns.push(design)
+}

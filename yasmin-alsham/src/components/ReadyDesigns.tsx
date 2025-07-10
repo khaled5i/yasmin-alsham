@@ -4,57 +4,19 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Heart, Star, Palette, ChevronLeft, ChevronRight } from 'lucide-react'
+import { allDesigns } from '@/data/designs'
 
 export default function ReadyDesigns() {
   const [currentImageIndexes, setCurrentImageIndexes] = useState<{[key: number]: number}>({
     1: 0, 2: 0, 3: 0, 4: 0
   })
-  const readyDesigns = [
-    {
-      id: 1,
-      title: 'فستان زفاف كلاسيكي',
-      description: 'فستان زفاف أنيق بتصميم كلاسيكي مع تطريز يدوي',
-      category: 'فساتين زفاف',
-      images: [
-        '/wedding-dress-1.jpg.jpg',
-        '/wedding-dress-1a.jpg.jpg',
-        '/wedding-dress-1b.jpg.jpg'
-      ]
-    },
-    {
-      id: 2,
-      title: 'فستان سهرة راقي',
-      description: 'فستان سهرة طويل بقصة عصرية ولمسات ذهبية',
-      category: 'فساتين سهرة',
-      images: [
-        '/wedding-dress-2.jpg.jpg',
-        '/wedding-dress-2a.jpg.jpg',
-        '/wedding-dress-2b.jpg.jpg'
-      ]
-    },
-    {
-      id: 3,
-      title: 'فستان كوكتيل أنيق',
-      description: 'فستان كوكتيل قصير بتصميم عصري ومميز',
-      category: 'فساتين كوكتيل',
-      images: [
-        '/wedding-dress-3.jpg.jpg',
-        '/wedding-dress-3a.jpg.jpg',
-        '/wedding-dress-3b.jpg.jpg'
-      ]
-    },
-    {
-      id: 4,
-      title: 'فستان خطوبة مميز',
-      description: 'فستان خطوبة بتصميم رومانسي وتفاصيل دقيقة',
-      category: 'فساتين خطوبة',
-      images: [
-        '/wedding-dress-4.jpg.jpg',
-        '/wedding-dress-4a.jpg.jpg',
-        '/wedding-dress-4b.jpg.jpg'
-      ]
-    }
-  ]
+  // استخدم أول 4 تصاميم من allDesigns بدلاً من مصفوفة ثابتة
+  const [version, setVersion] = useState(0)
+  useEffect(() => {
+    const interval = setInterval(() => setVersion(v => v + 1), 1000)
+    return () => clearInterval(interval)
+  }, [])
+  const readyDesigns = allDesigns.slice(0, 4)
 
   // دوال التنقل بين صور البطاقة
   const nextCardImage = (designId: number, e: React.MouseEvent) => {
