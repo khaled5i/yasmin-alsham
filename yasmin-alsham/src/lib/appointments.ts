@@ -177,8 +177,19 @@ export class AppointmentService {
       query = query.limit(filters.limit)
     }
     
-    // محاكاة البيانات للتطوير
-    return []
+    try {
+      const { data, error } = await query
+
+      if (error) {
+        console.error('خطأ في جلب المواعيد:', error)
+        return []
+      }
+
+      return (data as Appointment[]) || []
+    } catch (error) {
+      console.error('خطأ غير متوقع في جلب المواعيد:', error)
+      return []
+    }
   }
   
   // تحديث حالة الموعد
