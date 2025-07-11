@@ -152,7 +152,7 @@ export default function BookAppointmentPage() {
         appointmentDate: selectedDate,
         appointmentTime: selectedTime,
         notes: notes || undefined,
-        status: 'pending'
+        status: 'scheduled'
       })
 
       setMessage({

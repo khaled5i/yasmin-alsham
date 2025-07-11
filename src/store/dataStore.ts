@@ -9,7 +9,7 @@ export interface Appointment {
   appointmentDate: string
   appointmentTime: string
   notes?: string
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled'
   createdAt: string
   updatedAt: string
 }
@@ -146,7 +146,7 @@ export const useDataStore = create<DataState>()(
         const appointment: Appointment = {
           ...appointmentData,
           id: generateId(),
-          status: 'pending',
+          status: 'scheduled',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }

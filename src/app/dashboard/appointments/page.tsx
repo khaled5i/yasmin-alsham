@@ -42,12 +42,12 @@ export default function AppointmentsPage() {
 
   const getStatusInfo = (status: string) => {
     const statusMap = {
-      pending: { label: t('pending'), color: 'text-blue-600', bgColor: 'bg-blue-100', icon: Clock },
+      scheduled: { label: t('scheduled'), color: 'text-blue-600', bgColor: 'bg-blue-100', icon: Clock },
       confirmed: { label: t('confirmed'), color: 'text-green-600', bgColor: 'bg-green-100', icon: CheckCircle },
       completed: { label: t('completed'), color: 'text-purple-600', bgColor: 'bg-purple-100', icon: CheckCircle },
       cancelled: { label: t('cancelled'), color: 'text-red-600', bgColor: 'bg-red-100', icon: XCircle }
     }
-    return statusMap[status as keyof typeof statusMap] || statusMap.pending
+    return statusMap[status as keyof typeof statusMap] || statusMap.scheduled
   }
 
   // وظائف إدارة المواعيد
