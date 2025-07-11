@@ -139,7 +139,7 @@ echo 📤 Pushing updates to GitHub...
 
 :: تحديد اسم الفرع
 for /f "tokens=*" %%i in ('git branch --show-current 2^>nul') do set current_branch=%%i
-if "%current_branch%"=="" set current_branch=master
+if "%current_branch%"=="" set current_branch=main
 
 echo 🌿 الفرع الحالي: %current_branch%
 echo 🌿 Current branch: %current_branch%

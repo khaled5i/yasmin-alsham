@@ -203,7 +203,7 @@ catch {
 # Get current branch
 $currentBranch = git branch --show-current 2>$null
 if (-not $currentBranch) {
-    $currentBranch = "master"
+    $currentBranch = "main"
 }
 
 # Push to GitHub

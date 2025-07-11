@@ -36,7 +36,11 @@ echo 💾 إنشاء commit...
 git commit -m "%commit_message%"
 
 echo 📤 رفع إلى GitHub...
-git push
+:: تحديد الفرع الحالي أو استخدام main كافتراضي
+for /f "tokens=*" %%i in ('git branch --show-current 2^>nul') do set current_branch=%%i
+if "%current_branch%"=="" set current_branch=main
+echo 🌿 الفرع: %current_branch%
+git push origin %current_branch%
 
 if errorlevel 1 (
     echo ❌ فشل في الرفع
