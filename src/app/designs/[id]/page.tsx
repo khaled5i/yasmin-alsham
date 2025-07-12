@@ -132,7 +132,7 @@ export default function DesignDetailPage() {
         >
           <Link
             href="/designs"
-            className="inline-flex items-center space-x-2 space-x-reverse text-pink-600 hover:text-pink-700 transition-colors duration-300"
+            className="inline-flex items-center space-x-2 space-x-reverse text-pink-600 hover:text-pink-700 transition-colors duration-300 fixed top-4 left-4 z-40 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-lg lg:static lg:bg-transparent lg:backdrop-blur-none lg:px-0 lg:py-0 lg:rounded-none lg:shadow-none"
           >
             <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5" />
             <span className="text-sm lg:text-base">العودة إلى التصاميم</span>
